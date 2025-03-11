@@ -19,6 +19,6 @@
 <style scoped>
 #tracklist-box {
  overflow-y: scroll;
- height: 100%;
+ height: 88%;
 }
 </style>

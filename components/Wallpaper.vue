@@ -1,5 +1,5 @@
 <script setup>
-import DefWall from "@/assets/def-wall.png";
+import DefWall from "@/assets/def-wall2.gif";
 </script>
 
 <template>

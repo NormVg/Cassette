@@ -4,15 +4,11 @@
 </script>
 
 <template>
-  <div>
 
-    <SideBar />
-<Wallpaper/>
-<PlayBox/>
-<ActiveArea>
-<TrackList/>
-</ActiveArea>
-  </div>
+<Desktop v-if="$device.isDesktop" />
+
+<Phone v-else/>"
+
 </template>
 
 <style scoped>
