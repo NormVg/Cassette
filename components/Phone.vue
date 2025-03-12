@@ -4,3 +4,9 @@
 
   </div>
 </template>
+
+<style scoped>
+  div{
+    color: white;
+  }
+</style>

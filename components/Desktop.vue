@@ -10,7 +10,8 @@
 <Wallpaper/>
 <PlayBox/>
 <ActiveArea>
-<TrackList/>
+<!-- <TrackList/> -->
+ <Settings/>
 </ActiveArea>
   </div>
 </template>

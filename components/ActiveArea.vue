@@ -35,14 +35,14 @@ const prop = defineProps(
 }
 
 #active-area{
-  height:calc(100vh - 280px);
-  width: calc(100% - 80px);
+  height:calc(100vh - 250px);
+  width: calc(100% - 25vw - 90px);
   background-color:#ad28319a;
-  margin-left:70px ;
+  margin-left:calc(25vw + 80px); ;
   margin-right: 20px;
-  margin-top: 40px;
+  margin-top: calc(-100vh + 250px);
   border-radius: 10px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 </style>
