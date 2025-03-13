@@ -4,10 +4,13 @@ import Mix from "@/assets/mix.png";
 import Loop from "@/assets/loop.png";
 import Pause from "@/assets/pause.png";
 import DefMusic from "@/assets/def-music.mp3";
+import { useAppBasicStore } from "~/store/AppBasicState";
+import DefThumb from "@/assets/def-thumb.png"
+
 
 const isMusicPlaying = ref(false);
 
-
+const AppBasic = useAppBasicStore()
 
 const updateTime = (e) => {
   const audio = e.target;
@@ -41,6 +44,12 @@ const BarClick = (e) => {
 };
 
 const toggleMusic = () => {
+
+  if (AppBasic.currentSong.src === undefined){
+    alert("choose a music")
+    return
+  }
+
   const music = document.getElementById("audio");
   if (isMusicPlaying.value) {
     music.pause();
@@ -50,7 +59,51 @@ const toggleMusic = () => {
   isMusicPlaying.value = !isMusicPlaying.value;
 };
 
+import axios from "axios";
 
+
+
+
+import { parseBlob } from "music-metadata"; // now hybrid, works in browser
+
+
+const metadata = ref(null);
+const thumbnail = ref(DefThumb);
+
+
+const getThumbNail = async () => {
+
+
+
+
+
+  console.log('asd SONG CHANGED')
+  const audioUrl = AppBasic.currentSong.src
+
+  const response = await axios.get(audioUrl, { responseType: "arraybuffer" });
+
+  const mimeType = response.headers["content-type"] || "audio/mpeg";
+// Create a Blob from the arraybuffer
+  const blob = new Blob([response.data], { type: mimeType });
+
+    const metadataResult = await parseBlob(blob);
+    metadata.value = metadataResult.common;
+
+    // Extract the first cover art if available
+    if (metadataResult.common.picture?.length) {
+      const cover = metadataResult.common.picture[0];
+      const blob = new Blob([cover.data], { type: cover.format });
+      thumbnail.value = URL.createObjectURL(blob);
+    } else {
+      thumbnail.value = DefThumb;
+
+}}
+
+const srcURL  = computed(()=>{
+  return  AppBasic.currentSong.src
+})
+
+watch(srcURL,getThumbNail)
 
 </script>
 
@@ -58,14 +111,19 @@ const toggleMusic = () => {
   <div id="playbox-box">
 
     <div id="thumbnail-box">
-      <img src="@/assets/thumb.png" alt="thumbnail">
+      <img :src="thumbnail" alt="thumbnail">
     </div>
 
     <div id="player-box">
 
       <div id="pb-info">
-        <div id="pb-title">Midnight - alemeerk</div>
-        <div id="pb-artist">alemeerk</div>
+        <div id="pb-title" :title="AppBasic.currentSong.name" >
+        <span>
+
+          {{ AppBasic.currentSong.name }}
+        </span>
+        </div>
+        <div id="pb-artist">{{AppBasic.currentSong.artist}}</div>
       </div>
 
       <div class="bar" id="bar">
@@ -96,7 +154,7 @@ const toggleMusic = () => {
 
     </div>
 
-    <audio id="audio" ref="audio" loop :src="DefMusic" @timeupdate="updateTime" @ended="SongEnd"></audio>
+    <audio id="audio" ref="audio" loop :src="AppBasic.currentSong.src" @timeupdate="updateTime" @ended="SongEnd"></audio>
   </div>
 </template>
 
@@ -117,14 +175,52 @@ const toggleMusic = () => {
 
 }
 
-#pb-title {
+/* #pb-title {
   padding-top: 10px;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  word-break: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: #0A090C;
+  width: 50%;
+  border: 1px solid green;
+  animation: marquee 10s linear infinite;
+  display: inline-block;
+
+} */
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  50%{ transform: translateX(0); }
+  /* 80% { transform: translateX(-100%); } */
+  100% { transform: translateX(-100%); }
 }
 
+#pb-title {
+  padding-top: 10px;
+  font-size: 1.3rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #0A090C;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+#pb-title span {
+  /* animation-delay: 5s; */
+  animation: marquee 20s linear infinite;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+
+
 #pb-artist {
-  font-size: 1.2rem;
+  font-size: 1.01rem;
   color: #0A090C;
 }
 
@@ -176,7 +272,7 @@ const toggleMusic = () => {
 
 .bar-now {
   height: 100%;
-  width: 40%;
+  width: 0%;
   background-color: #0A090C;
   border-radius: 5px;
   transition: all ease-in-out .2s;

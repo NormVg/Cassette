@@ -1,5 +1,6 @@
 <script setup>
-import DefThumb from "@/assets/thumb.png"
+import DefThumb from "@/assets/def-thumb.png"
+import { useAppBasicStore } from "~/store/AppBasicState";
 const prop = defineProps(
   {
     title: {
@@ -10,19 +11,51 @@ const prop = defineProps(
       type: String,
       default: "Artist",
     },
-    img: {
+    idsong:{
       type: String,
-      default: DefThumb,
+      default:"1802275278415"
     }
   }
 );
+
+const AppBasic = useAppBasicStore()
+
+const handleClick = async ()=>{
+  console.log(prop.idsong)
+
+  const {data:srcURL} = await useFetch("/api/box/songURL?song_id="+prop.idsong)
+
+  AppBasic.SetcurrentSong({
+    name:prop.title,
+    artist:prop.artist,
+    src:srcURL.value.src
+  })
+}
+
+
+
+
+const thumbSrc = ref(DefThumb); // Make sure it starts as a reactive variable
+
+// watchEffect(async () => {
+//   if (!prop.idsong) return; // Ensure `idsong` is valid
+
+//   const { data: thumb } = await useFetch(`/api/thumb?id=${prop.idsong}`);
+//   console.log("Fetched Thumbnail:", typeof thumb.value === Object);
+
+//   if (thumb.value) {
+//     const blob = new Blob([thumb.value], { type: "image/png" });
+//     thumbSrc.value = URL.createObjectURL(blob); // Assign fetched value reactively
+//   }
+// });
+
 </script>
 
 <template>
-  <div class="song-card">
+  <div class="song-card" @click="handleClick">
 
     <div class="song-card-thumb">
-      <img :src="img" alt="">
+      <img :src="thumbSrc" alt="">
     </div>
 
     <div class="song-info">

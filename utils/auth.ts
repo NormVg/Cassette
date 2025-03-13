@@ -3,7 +3,7 @@ import ps from "pg"
 
 import { username } from "better-auth/plugins"
 
-
+// import { PostGress } from "~/utils/PgPool";
 
 export const auth = betterAuth({
 
@@ -15,7 +15,8 @@ export const auth = betterAuth({
         username()
     ] ,
 
-    database: new ps.Pool({
-        connectionString : process.env.DATABASE_URL
-    })
+    database:new ps.Pool({
+            connectionString : process.env.DATABASE_URL
+        })
+
 })

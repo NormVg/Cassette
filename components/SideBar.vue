@@ -6,6 +6,11 @@ import IconTr from "@/assets/tracklist.png";
 import IconPlayList from "@/assets/playlist.png";
 import IconAdd from "@/assets/add.png";
 import IconSettings from "@/assets/settings.png";
+import { useActiveAreaStore } from "~/store/ActiveAreaState";
+import { useAppBasicStore } from "~/store/AppBasicState";
+
+const ActiveAreaStore = useActiveAreaStore()
+const AppBaiscStore = useAppBasicStore()
 </script>
 
 <template>
@@ -15,21 +20,21 @@ import IconSettings from "@/assets/settings.png";
       <img :src="logo" alt="logo">
     </div>
 
-    <div id="menu-box">
+    <div id="menu-box" v-if="!AppBaiscStore.isNewUser"  >
 
-      <div id="menu-item">
+      <div id="menu-item" @click="()=>{ActiveAreaStore.setCurrentArea('TRACKLIST')}" >
         <img :src="IconTr" title="Tracklist">
       </div>
 
-      <div id="menu-item">
+      <div id="menu-item" @click="()=>{ActiveAreaStore.setCurrentArea('FOLDER')}" >
         <img :src="IconFs" title="Folder">
       </div>
 
-      <div id="menu-item">
+      <div id="menu-item"@click="()=>{ActiveAreaStore.setCurrentArea('PLAYLIST')}"  >
         <img :src="IconPlayList" title="Playlist">
       </div>
 
-      <div id="menu-item">
+      <div id="menu-item" @click="()=>{ActiveAreaStore.setCurrentArea('ADD MUSIC')}"  >
         <img :src="IconAdd" title="Add Music">
       </div>
 
@@ -37,7 +42,7 @@ import IconSettings from "@/assets/settings.png";
     </div>
 
 
-    <div id="settings-box">
+    <div id="settings-box" @click="()=>{ActiveAreaStore.setCurrentArea('SETTINGS')}">
       <img :src="IconSettings" title="Settings" >
     </div>
 

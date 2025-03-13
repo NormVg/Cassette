@@ -1,20 +1,18 @@
 
 <script setup>
-const prop = defineProps(
-  {
-    title: {
-      type: String,
-      default: "Active Area",
-    }
-  }
-);
+import { useActiveAreaStore } from '~/store/ActiveAreaState';
+
+
+
+const ActiveAreaStore = useActiveAreaStore()
+
 </script>
 
 <template>
   <div id="active-area">
 
     <div id="box-title">
-      {{ prop.title }}
+      {{ ActiveAreaStore.currentArea }}
     </div>
 
     <slot>

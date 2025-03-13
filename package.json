@@ -12,8 +12,10 @@
   "dependencies": {
     "@nuxtjs/device": "^3.2.4",
     "@pinia/nuxt": "0.10.1",
+    "axios": "^1.8.3",
     "better-auth": "^1.2.3",
     "box-typescript-sdk-gen": "^1.13.1",
+    "music-metadata": "^11.0.2",
     "nuxt": "^3.16.0",
     "nuxt-mongoose": "1.0.6",
     "pg": "^8.14.0",
