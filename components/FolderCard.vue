@@ -14,6 +14,8 @@ const prop = defineProps(
 
 
 
+
+
 </script>
 
 <template>
@@ -45,6 +47,18 @@ const prop = defineProps(
   border-radius: 10px;
   background-color: #0A090C;
   color: white;
+  transition: all ease-in-out 200ms;
+}
+
+
+.song-folder-card:hover {
+  background-color: #17151b;
+
+}
+
+.song-folder-card:active {
+  scale: 0.98;
+
 }
 
 .song-folder-card-thumb {

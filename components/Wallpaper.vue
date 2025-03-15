@@ -1,10 +1,37 @@
 <script setup>
-import DefWall from "@/assets/wall3.gif";
+import DefWall from "@/assets/wall2.gif";
+
+
+const wallpaper = ref( DefWall)
+
+
+const fetchWallpaper = async () => {
+  try {
+
+    const {data:src} = await useFetch("/api/box/getWallpaper")
+    if(src.value === false){
+      wallpaper.value = DefWall
+    }else{
+      wallpaper.value = src.value
+    }
+
+
+  } catch (error) {
+    wallpaper.value = DefWall
+  }
+}
+
+onMounted(async () => {
+fetchWallpaper()
+}
+
+)
 </script>
 
 <template>
-  <div id="wall-box">
+  <div id="wall-box" :style="`background-image: url(${wallpaper});`" >
     <!-- <img :src="DefWall" alt=""> -->
+
 
   </div>
 </template>
@@ -21,23 +48,13 @@ import DefWall from "@/assets/wall3.gif";
   border-radius: 10px;
   overflow: hidden;
 
-  background-image: url(@/assets/wall2.gif);
+  /* background-image: url(wallpaper); */
   background-position: 50% 20%;
   background-repeat: no-repeat;
   background-size: cover
 ;
 }
 
-/* #wall-box img{
 
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-
-} */
 
 </style>

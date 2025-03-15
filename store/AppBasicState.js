@@ -7,8 +7,21 @@ export const useAppBasicStore = defineStore("app-basic-state", () => {
   const BOX_CLIENT_SECRET = ref("");
   const BOX_USER_ID = ref("");
   const SessionUsername = ref("")
-  const currentSong = ref({name:"Cassette Music",src:undefined,artist:"Distributed Streaming"})
+  const currentSong = ref({name:"Cassette Music",src:undefined,artist:"Distributed Streaming",songID:""})
 
+  const currentTracklist = ref([])
+
+  const isMusicLoading = ref(false)
+
+
+  const setIsMusicLoading =  (params) => {
+      isMusicLoading.value = params
+  }
+
+
+  const SetCurrentTrackList = (params) => {
+    currentTracklist.value = params
+  }
 
   const SetcurrentSong = (param )=>{
 
@@ -52,6 +65,13 @@ export const useAppBasicStore = defineStore("app-basic-state", () => {
     SetSessionUsername,
 
     currentSong,
-    SetcurrentSong
+    SetcurrentSong,
+
+
+    currentTracklist,
+    SetCurrentTrackList,
+
+    isMusicLoading,
+    setIsMusicLoading
   };
 });

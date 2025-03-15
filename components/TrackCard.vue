@@ -1,7 +1,13 @@
 <script setup>
 import DefThumb from "@/assets/def-thumb.png"
+
+import Playing from "@/assets/playing.png"
+
 import { useActiveAreaStore } from "~/store/ActiveAreaState";
 import { useAppBasicStore } from "~/store/AppBasicState";
+
+
+
 const prop = defineProps(
   {
     title: {
@@ -15,46 +21,15 @@ const prop = defineProps(
     idsong: {
       type: String,
       default: "1802275278415"
-    },
-    currentTrackList:{
-      type:Object,
-      default:undefined
     }
   }
 );
 
 const AppBasic = useAppBasicStore()
-const ActiveArea = useActiveAreaStore()
+// const ActiveArea = useActiveAreaStore()
 
 const handleClick = async () => {
 
-  console.log(prop.currentTrackList)
-
-
-
-
-    var mainList = []
-
-    prop.currentTrackList.forEach(element => {
-      if (element.type === 'file'){
-
-      mainList.push({
-        name:element.name,
-        id:element.id,
-        artist:prop.artist
-      })
-    }
-    });
-
-
-    console.log(mainList)
-    AppBasic.SetCurrentTrackList(mainList)
-
-
-
-
-
-  console.log(prop.idsong)
 
   const { data: srcURL } = await useFetch("/api/box/songURL?song_id=" + prop.idsong)
 
@@ -64,8 +39,6 @@ const handleClick = async () => {
     src: srcURL.value.src,
     songID: prop.idsong
   })
-
-  ActiveArea.setCurrentArea('TRACKLIST')
 }
 
 
@@ -105,7 +78,14 @@ const getThumbNail = async () => {
 
 
 
+const isPlaying = computed(()=>{
+  if (AppBasic.currentSong.songID === prop.idsong){
 
+    return true
+  }else{
+    return false
+  }
+})
 
 
 
@@ -122,6 +102,7 @@ onMounted(async () => {
 
     <div class="song-card-thumb">
       <img :src="thumbnail" alt="">
+
     </div>
 
     <div class="song-info">
@@ -134,11 +115,36 @@ onMounted(async () => {
 
     </div>
 
+    <div id="song-playing-box" v-if="isPlaying" >
+      <img :src="Playing"  alt="playing">
+    </div>
+
 
   </div>
 </template>
 
 <style scoped>
+
+
+#song-playing-box{
+  height: 60px;
+  /* width: 0px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  /* margin: 0%; */
+  padding: 0%;
+}
+
+#song-playing-box img{
+  height: 30px;
+  width: 30px;
+  animation: rotate 5s linear infinite;
+
+}
+
+
 .song-card {
   display: flex;
   margin-top: 10px;
@@ -150,13 +156,14 @@ onMounted(async () => {
   background-color: #0A090C;
   color: white;
   transition: all ease-in-out 200ms;
-
 }
 
 .song-card:hover {
   background-color: #17151b;
 
 }
+
+
 .song-card:active {
   scale: 0.98;
 
@@ -195,4 +202,17 @@ onMounted(async () => {
   justify-content: center;
   width: 100%;
 }
+
+
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>

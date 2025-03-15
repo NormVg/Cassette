@@ -51,6 +51,20 @@ onMounted(async () => {
       <FileSystem v-if="ActiveAreaStore.currentArea === 'FOLDER'" />
     </ActiveArea>
   </div>
+
+  <div class="loading-screen" v-else  >
+
+    <div class="Homeloader"  ></div>
+  </div>
+
 </template>
 
-<style scoped></style>
+<style scoped>
+
+.loading-screen{
+  height: 97vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

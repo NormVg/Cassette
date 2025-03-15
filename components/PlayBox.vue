@@ -1,14 +1,20 @@
 <script setup>
 import Play from "@/assets/play.png";
-import Mix from "@/assets/mix.png";
-import Loop from "@/assets/loop.png";
 import Pause from "@/assets/pause.png";
-import DefMusic from "@/assets/def-music.mp3";
+
+import Mix from "@/assets/mix.png";
+import MixOff from "@/assets/suffle_off.png"
+
+import LoopOff from "@/assets/loop_off.png"
+import Loop from "@/assets/loop.png";
+// import DefMusic from "@/assets/def-music.mp3";
 import { useAppBasicStore } from "~/store/AppBasicState";
 import DefThumb from "@/assets/def-thumb.png"
 
 
 const isMusicPlaying = ref(false);
+const isLoop = ref(false)
+const isSuffle = ref(false)
 
 const AppBasic = useAppBasicStore()
 
@@ -32,20 +38,45 @@ const updateTime = (e) => {
   playFull.textContent = `${fullMinutes}:${fullSeconds < 10 ? "0" + fullSeconds : fullSeconds}`;
 };
 
-const SongEnd = (e) => {
+const SongEnd = async (e) => {
   console.log("next song");
+
+  if (isLoop.value) {
+    const music = document.getElementById("audio");
+    music.currentTime = 0;
+    music.play();
+  } else {
+    const currentIndex = AppBasic.currentTracklist.findIndex(item => item.id === AppBasic.currentSong.songID);
+
+    const nextSong = AppBasic.currentTracklist[currentIndex+1]
+
+    console.log(nextSong)
+
+    const {data:NextSource} = await useFetch("/api/box/getURL?file_id="+nextSong.id)
+
+    AppBasic.SetcurrentSong({
+      name:nextSong.name,
+      src:NextSource.value,
+      artist:AppBasic.currentSong.artist,
+      songID:nextSong.id
+    })
+
+
+
+  }
+
 };
 
 
 const BarClick = (e) => {
   const barFull = document.getElementById("bar-full");
   const music = document.getElementById("audio");
-  music.currentTime = (e.offsetX/barFull.offsetWidth)*music.duration
+  music.currentTime = (e.offsetX / barFull.offsetWidth) * music.duration
 };
 
 const toggleMusic = () => {
 
-  if (AppBasic.currentSong.src === undefined){
+  if (AppBasic.currentSong.src === undefined) {
     alert("choose a music")
     return
   }
@@ -59,51 +90,72 @@ const toggleMusic = () => {
   isMusicPlaying.value = !isMusicPlaying.value;
 };
 
-import axios from "axios";
+
+const toggleSuffle = () => {
+
+  isSuffle.value = !isSuffle.value;
+};
+
+const toggleLoop = () => {
+  // const music = document.getElementById("audio");
+  // music.loop = !isLoop.value;
+  isLoop.value = !isLoop.value;
+};
 
 
 
-
-import { parseBlob } from "music-metadata"; // now hybrid, works in browser
-
-
-const metadata = ref(null);
-const thumbnail = ref(DefThumb);
-
+const thumbnail = ref(DefThumb)
 
 const getThumbNail = async () => {
 
 
 
+  try {
+    // console.log("SONG ID",AppBasic.currentSong.songID)
+    const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + AppBasic.currentSong.songID)
 
+    if (thumb_data.value === false) {
+      const { data: resp } = await useFetch(`/api/box/saveThumb?songId=${AppBasic.currentSong.songID}&username=${AppBasic.SessionUsername}`)
 
-  console.log('asd SONG CHANGED')
-  const audioUrl = AppBasic.currentSong.src
+      if (resp.value == true) {
 
-  const response = await axios.get(audioUrl, { responseType: "arraybuffer" });
+        const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + AppBasic.currentSong.songID)
+        console.log(thumb_data.value)
+        thumbnail.value = thumb_data.value
 
-  const mimeType = response.headers["content-type"] || "audio/mpeg";
-// Create a Blob from the arraybuffer
-  const blob = new Blob([response.data], { type: mimeType });
+      } else {
+        thumbnail.value = DefThumb
+      }
 
-    const metadataResult = await parseBlob(blob);
-    metadata.value = metadataResult.common;
-
-    // Extract the first cover art if available
-    if (metadataResult.common.picture?.length) {
-      const cover = metadataResult.common.picture[0];
-      const blob = new Blob([cover.data], { type: cover.format });
-      thumbnail.value = URL.createObjectURL(blob);
     } else {
-      thumbnail.value = DefThumb;
+      console.log(thumb_data.value)
+      thumbnail.value = thumb_data.value
 
-}}
+    }
 
-const srcURL  = computed(()=>{
-  return  AppBasic.currentSong.src
+
+  } catch (error) {
+    console.log(error)
+    thumbnail.value = DefThumb
+  }
+
+
+}
+
+const srcURL = computed(() => {
+  return AppBasic.currentSong.src
 })
 
-watch(srcURL,getThumbNail)
+
+const onSongChange = async () => {
+  isMusicPlaying.value = true
+  await getThumbNail()
+  const music = document.getElementById("audio");
+  music.play()
+
+}
+
+watch(srcURL, onSongChange)
 
 </script>
 
@@ -117,13 +169,13 @@ watch(srcURL,getThumbNail)
     <div id="player-box">
 
       <div id="pb-info">
-        <div id="pb-title" :title="AppBasic.currentSong.name" >
-        <span>
+        <div id="pb-title" :title="AppBasic.currentSong.name">
+          <span>
 
-          {{ AppBasic.currentSong.name }}
-        </span>
+            {{ AppBasic.currentSong.name }}
+          </span>
         </div>
-        <div id="pb-artist">{{AppBasic.currentSong.artist}}</div>
+        <div id="pb-artist">{{ AppBasic.currentSong.artist }}</div>
       </div>
 
       <div class="bar" id="bar">
@@ -135,34 +187,38 @@ watch(srcURL,getThumbNail)
       </div>
 
       <div id="pb-controls">
-        <div id="pb-mix" class="pb-btn">
-          <img :src="Mix" alt="mix">
+        <div id="pb-mix" class="pb-btn" @click="toggleSuffle"  >
+          <img :src="Mix" v-if="isSuffle"  alt="mix">
+          <img :src="MixOff" v-else  alt="mix-off">
+
         </div>
         <div id="pb-play-pause" class="pb-btn">
 
-          <img :src="Play" v-if="!isMusicPlaying" @click="toggleMusic"  alt="play">
-          <img :src="Pause" v-else @click="toggleMusic"  alt="pause">
+          <img :src="Play" v-if="!isMusicPlaying" @click="toggleMusic" alt="play">
+          <img :src="Pause" v-else @click="toggleMusic" alt="pause">
 
         </div>
 
 
-        <div id="pb-loop" class="pb-btn">
-          <img :src="Loop" alt="loop">
+        <div id="pb-loop" class="pb-btn" @click="toggleLoop"  >
+          <img :src="Loop" v-if="isLoop"  alt="loop">
+          <img :src="LoopOff" v-else  alt="loop-off">
+
         </div>
 
       </div>
 
     </div>
 
-    <audio id="audio" ref="audio" loop :src="AppBasic.currentSong.src" @timeupdate="updateTime" @ended="SongEnd"></audio>
+    <audio id="audio" ref="audio"  :src="AppBasic.currentSong.src" @timeupdate="updateTime"
+      @ended="SongEnd"></audio>
   </div>
 </template>
 
 <style scoped>
-
 #audio {
-    display: none;
-  }
+  display: none;
+}
 
 #pb-info {
   /* border: 1px solid wheat; */
@@ -175,26 +231,21 @@ watch(srcURL,getThumbNail)
 
 }
 
-/* #pb-title {
-  padding-top: 10px;
-  font-size: 1.3rem;
-  word-break: none;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: #0A090C;
-  width: 50%;
-  border: 1px solid green;
-  animation: marquee 10s linear infinite;
-  display: inline-block;
 
-} */
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  50%{ transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
   /* 80% { transform: translateX(-100%); } */
-  100% { transform: translateX(-100%); }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 #pb-title {
@@ -203,7 +254,8 @@ watch(srcURL,getThumbNail)
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: #0A090C;
+  /* color: #0A090C; */
+  color: #E9DBC7;
   width: 100%;
   display: flex;
   align-items: center;
@@ -221,7 +273,9 @@ watch(srcURL,getThumbNail)
 
 #pb-artist {
   font-size: 1.01rem;
-  color: #0A090C;
+  /* color: #0A090C; */
+  color: #E9DBC7;
+
 }
 
 #pb-controls {
@@ -236,6 +290,7 @@ watch(srcURL,getThumbNail)
   width: 40px;
   height: 40px;
 }
+
 .pb-btn {
   width: 40px;
   height: 40px;
@@ -253,7 +308,8 @@ watch(srcURL,getThumbNail)
   width: 90%;
   height: 15px;
   flex-direction: row;
-  color: #0A090C;
+  /* color: #0A090C; */
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,14 +347,14 @@ watch(srcURL,getThumbNail)
 
 
 #playbox-box {
-  background-color: #AD2831;
+  background-color: #ad28319a;
   background-image: url(@/assets/noise-texture.svg);
   background-size: cover;
   background-repeat: no-repeat;
 
   width: 25vw;
 
-  height:calc(100vh - 250px);
+  height: calc(100vh - 250px);
 
   border-radius: 10px;
 

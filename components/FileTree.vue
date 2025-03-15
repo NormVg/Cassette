@@ -43,7 +43,7 @@ const goBack = () => {
 
       <div v-for="item in currentFolder.child" :key="item.id">
         <FolderCard v-if="item.type === 'folder'" :title="item.name" @click="openFolder(item)" />
-        <SongCard v-if="item.type === 'file'" :idsong="item.id"  :title="item.name" :artist="currentFolder.name" />
+        <SongCard v-if="item.type === 'file'" :idsong="item.id"  :title="item.name" :artist="currentFolder.name" :currentTrackList="currentFolder.child"/>
       </div>
     </div>
 
@@ -51,7 +51,7 @@ const goBack = () => {
     <div v-else>
       <div v-for="item in initialTree" :key="item.id">
         <FolderCard v-if="item.type === 'folder'" :title="item.name" @click="openFolder(item)" />
-        <SongCard v-if="item.type === 'file'"  :idsong="item.id"  :title="item.name" :artist="'Home'" />
+        <SongCard v-if="item.type === 'file'"  :idsong="item.id"  :title="item.name" :artist="'Home'" :currentTrackList="initialTree"  />
       </div>
     </div>
   </div>

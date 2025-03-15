@@ -1,6 +1,6 @@
 <template>
   <div>
-      Phone Vue of The Cassete
+      Cassette On Phone soon....
 
   </div>
 </template>

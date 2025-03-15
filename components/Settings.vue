@@ -37,22 +37,20 @@ const handleSubmit = async () => {
     ClientCred: ClientCred.value,
   });
 
-  const {data:resp}= await useFetch("/api/setupUser",{
-    method:"POST",
-    body:{
-      "username":AppBasic.SessionUsername.trim(),
+  const { data: resp } = await useFetch("/api/setupUser", {
+    method: "POST",
+    body: {
+      "username": AppBasic.SessionUsername.trim(),
       "userID": userID.value.trim(),
       "ClientID": ClientId.value.trim(),
       "ClientSecret": ClientCred.value.trim(),
     }
   })
 
-  if (resp.value){
+  if (resp.value) {
     AppBasic.setIsNewUser(false)
     ActiveAreaStore.setCurrentArea("FOLDER")
   }
-
-
 
 
 
@@ -63,18 +61,17 @@ const handleSubmit = async () => {
 
 
 
-const handleLogOut =  () => {
+const handleLogOut = () => {
   navigateTo("/logout")
 }
 
 
+const handleSyncBtn = async () => {
 
-
-const handleSyncBtn = async () =>{
-
-  if (isSync.value === false){
+  if (isSync.value === false) {
     isSync.value = true
-    const {data:syncd} = await useFetch("/api/sync?username="+AppBasic.SessionUsername)
+    await useFetch("/api/indexMusic?username=" + AppBasic.SessionUsername)
+    await useFetch("/api/indexThumb?username=" + AppBasic.SessionUsername)
     isSync.value = false
     alert("data synced")
   }
@@ -86,34 +83,34 @@ const handleSyncBtn = async () =>{
   <div id="settings-box">
 
     <div id="imgUpl">
-        <label for="imageUpload">
+      <label for="imageUpload">
 
-          Upload Wallpaper <img :src="UploadIcon" alt="upload wallpaper">
-
-
-        </label>
-        <input type="file" id="imageUpload" @change="handleImageUpload" />
-      </div>
-
-      <div id="imgUpl" @click="handleSyncBtn"  >
-        <label for="btn">
-
-          Sync Media <img :class="isSync ? 'rotate' : '' "  :src="SyncIcon" alt="sync media">
+        Upload Wallpaper <img :src="UploadIcon" alt="upload wallpaper">
 
 
-        </label>
+      </label>
+      <input type="file" id="imageUpload" @change="handleImageUpload" />
+    </div>
 
-      </div>
+    <div id="imgUpl" @click="handleSyncBtn">
+      <label for="btn">
 
-      <div id="imgUpl" @click="handleLogOut" >
-        <label for="btn">
-
-          LogOut <img :src="Logout" alt="sync media">
+        Sync Media <img :class="isSync ? 'rotate' : ''" :src="SyncIcon" alt="sync media">
 
 
-        </label>
+      </label>
 
-      </div>
+    </div>
+
+    <div id="imgUpl" @click="handleLogOut">
+      <label for="btn">
+
+        LogOut <img :src="Logout" alt="sync media">
+
+
+      </label>
+
+    </div>
 
     <form @submit.prevent="handleSubmit">
 
@@ -140,17 +137,17 @@ const handleSyncBtn = async () =>{
 </template>
 
 <style scoped>
-
 @keyframes rotate {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-.rotate{
+.rotate {
   animation: rotate 2s linear infinite
 }
 
