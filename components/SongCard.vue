@@ -2,6 +2,9 @@
 import DefThumb from "@/assets/def-thumb.png"
 import { useActiveAreaStore } from "~/store/ActiveAreaState";
 import { useAppBasicStore } from "~/store/AppBasicState";
+import add_btn from "@/assets/add_btn.png"
+import { usePopUpStore } from "~/store/PopUpStore";
+
 const prop = defineProps(
   {
     title: {
@@ -23,6 +26,7 @@ const prop = defineProps(
   }
 );
 
+const PopState = usePopUpStore()
 const AppBasic = useAppBasicStore()
 const ActiveArea = useActiveAreaStore()
 
@@ -106,7 +110,11 @@ const getThumbNail = async () => {
 
 
 
-
+const handleMenuClick = (event) => {
+  event.stopPropagation(); // Prevent triggering the parent click event
+  console.log("Menu clicked for song:", prop.title);
+  // Add logic to handle the menu click, e.g., show a dropdown or options menu
+};
 
 
 
@@ -118,20 +126,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="song-card" @click="handleClick">
+  <div @click="handleClick" id="song-card-inner" >
+  <div class="song-card" >
 
-    <div class="song-card-thumb">
-      <img :src="thumbnail" alt="">
+
+
+      <div class="song-card-thumb">
+        <img :src="thumbnail" alt="">
+      </div>
+
+      <div class="song-info">
+        <div class="song-card-artist">
+          {{ artist }}
+        </div>
+        <div class="song-card-title">
+          {{ title }}
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="song-info">
-      <div class="song-card-artist">
-        {{ artist }}
-      </div>
-      <div class="song-card-title">
-        {{ title }}
-      </div>
 
+    <div id="song-menu-box" @click="handleMenuClick"  >
+      <img :src="add_btn" alt="">
     </div>
 
 
@@ -139,13 +157,69 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.song-card {
+
+#song-menu-box img{
+  height: 30px;
+}
+
+#song-card-inner{
   display: flex;
   margin-top: 10px;
   margin-bottom: 10px;
   margin-left: 10px;
   margin-right: 10px;
   /* padding: 10px; */
+  border-radius: 10px;
+  background-color: #0A090C;
+  color: white;
+  transition: all ease-in-out 200ms;
+
+}
+
+#song-card-inner:hover #song-menu-box{
+  opacity: 1;
+}
+
+#song-menu-box{
+  height: 60px;
+  user-select: none;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  transition: all ease-in-out 200ms;
+  /* margin: 0%; */
+  padding: 0%;
+  cursor: pointer;
+  font-size: 35px;
+  /* border: 1px solid green; */
+}
+
+#song-menu-box:hover{
+  color: grey;
+}
+
+#song-menu-box:active{
+  color: #AD2831;
+}
+
+
+/* .song-card:hover #song-menu-box{
+  display: flex;
+} */
+
+
+.song-card {
+  display: flex;
+  /* margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 10px; */
+  /* padding: 10px; */
+
+  margin-right: 10px;
+  width: 100%;
   border-radius: 10px;
   background-color: #0A090C;
   color: white;

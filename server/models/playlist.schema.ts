@@ -17,6 +17,6 @@ export const playlistSchema = defineMongooseModel({
      ],
   },
   options: {
-    collection: "thumbnail_index",
+    collection: "user_playlist",
   },
 });

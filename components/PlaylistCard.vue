@@ -1,5 +1,5 @@
 <script setup>
-import FolderIcon from "@/assets/red_folder.png"
+import PlayListIcon from "@/assets/playlist_red.png"
 
 
 
@@ -7,7 +7,7 @@ const prop = defineProps(
   {
     title: {
       type: String,
-      default: "song-folder Title",
+      default: "Playlist Title",
     }
   }
 );
@@ -19,15 +19,15 @@ const prop = defineProps(
 </script>
 
 <template>
-  <div class="song-folder-card">
+  <div class="playlist-folder-card">
 
-    <div class="song-folder-card-thumb">
-      <img :src="FolderIcon" alt="">
+    <div class="playlist-folder-card-thumb">
+      <img :src="PlayListIcon" alt="">
     </div>
 
-    <div class="song-folder-info">
+    <div class="playlist-folder-info">
 
-      <div class="song-folder-card-title">
+      <div class="playlist-folder-card-title">
         {{ title }}
       </div>
 
@@ -37,7 +37,7 @@ const prop = defineProps(
 </template>
 
 <style scoped>
-.song-folder-card {
+.playlist-folder-card {
   display: flex;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -51,50 +51,50 @@ const prop = defineProps(
 }
 
 
-.song-folder-card:hover {
+.playlist-folder-card:hover {
   background-color: #17151b;
 
 }
 
-.song-folder-card:active {
+.playlist-folder-card:active {
   scale: 0.98;
 
 }
 
-.song-folder-card-thumb {
+.playlist-folder-card-thumb {
   /* width: 100px; */
   height: 60px;
   border-radius: 10px;
   overflow: hidden;
-  /* border: 1px solid red; */
 
   display: flex;
   justify-content: center;
   align-items: center;
   margin-left: 10px;
   margin-right: 10px;
+
 }
 
-.song-folder-card-thumb img {
-  width: 100%;
-  /* height: 100%; */
+.playlist-folder-card-thumb img {
+  /* width: 100%; */
+  height: 80%;
   /* object-fit: cover; */
 }
 
 
-.song-folder-card-title {
+.playlist-folder-card-title {
   font-size: 17px;
   font-weight: bold;
   margin-bottom: 5px;
   color: #E9DBC7;
 }
 
-.song-folder-card-artist {
+.playlist-folder-card-artist {
   font-size: 13px;
   color: #989084;
 }
 
-.song-folder-info {
+.playlist-folder-info {
   padding-left: 10px;
   display: flex;
   flex-direction: column;

@@ -6,6 +6,8 @@ import { thumbSchema } from "../models/thumb.schema";
 
 import { ClientBox, BoxListDir, BoxFolderChild } from "~/utils/BoxClient";
 
+
+
 export default defineEventHandler(async (event) => {
   const { tao_id, username } = await getQuery(event);
 
@@ -87,7 +89,7 @@ export default defineEventHandler(async (event) => {
     index: MainList,
   };
 
-  // console.log(body)
+
 
   const ThumbNew = await thumbSchema.findOneAndUpdate(
     { userID: user_tao_id },

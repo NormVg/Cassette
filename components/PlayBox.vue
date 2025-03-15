@@ -309,7 +309,7 @@ watch(srcURL, onSongChange)
   height: 15px;
   flex-direction: row;
   /* color: #0A090C; */
-
+  color: #E9DBC7;
   display: flex;
   align-items: center;
   justify-content: center;
