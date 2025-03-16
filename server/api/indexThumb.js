@@ -5,38 +5,28 @@ import { UserSchema } from "../models/user.schema";
 import { thumbSchema } from "../models/thumb.schema";
 
 import { ClientBox, BoxListDir, BoxFolderChild } from "~/utils/BoxClient";
+import { usernameData } from "../func/usernameData";
+import getCurrentDateTimeString from "~/utils/syncNowDate";
 
 
 
 export default defineEventHandler(async (event) => {
-  const { tao_id, username } = await getQuery(event);
+  const {  username } = await getQuery(event);
 
-  var user_tao_id = "";
+  var user_cassette = await usernameData(username)
 
-  if (tao_id === undefined) {
+  var user_tao_id = user_cassette[0].userID;
 
-    const res = await PostGress.query(
-      'SELECT * FROM "user" WHERE username = $1',
-      [username]
-    );
+  var user_box_user_id = user_cassette[0].box_user_id;
+  var user_box_client_id = user_cassette[0].box_client_id
+  var user_box_client_secret = user_cassette[0].box_client_secret
 
-    const rep = await UserSchema.find({ userID: res.rows[0].id });
 
-    if (rep.length === 0) {
-
-      return "ERROR: user not found";
-
-    }
-
-    user_tao_id = res.rows[0].id;
-
-  } else {
-
-    user_tao_id = tao_id;
-
+  if (user_cassette.length === 0) {
+    return "ERROR: user not found";
   }
 
-  const clientBox = await ClientBox();
+  const clientBox = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
 
   const cass_data_folder = await BoxFolderChild(
     clientBox,
@@ -51,16 +41,7 @@ export default defineEventHandler(async (event) => {
     cass_data_folder.id
   );
 
-  function getCurrentDateTimeString() {
-    const now = new Date();
-    const date = now.getDate().toString().padStart(2, "0");
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const year = now.getFullYear();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const seconds = now.getSeconds().toString().padStart(2, "0");
-    return `${date}-${month}-${year}-${hours}-${minutes}-${seconds}`;
-  }
+
 
   if (!thumb_folder) {
     return [];

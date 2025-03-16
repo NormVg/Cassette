@@ -1,30 +1,23 @@
+import { usernameData } from "~/server/func/usernameData";
 import { playlistSchema } from "../../models/playlist.schema";
-import { UserSchema } from "../../models/user.schema";
+
 
 export default defineEventHandler(async (event) => {
   try {
-    const { tao_id, username } = await getQuery(event);
+    const { username } = await getQuery(event);
 
     const newPlaylist = await readBody(event)
 
-    var user_tao_id = "";
+    var user_cassette = await usernameData(username)
 
-    if (tao_id === undefined) {
-      const rep = await UserSchema.find({ username: username });
+    var user_tao_id = user_cassette[0].userID;
 
-      if (rep.length === 0) {
-        return "ERROR: user not found";
-      }
-      // return rep.userID
-      console.log(rep)
-      user_tao_id = rep[0].userID;
 
-    } else {
-      user_tao_id = tao_id;
+
+
+    if (user_cassette.length === 0) {
+      return "ERROR: user not found";
     }
-
-
-    console.log(user_tao_id)
 
 
 

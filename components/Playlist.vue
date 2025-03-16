@@ -114,7 +114,7 @@ onMounted(async () => {
       </div>
 
   <div v-for="item in OpenedPlaylist.PlaySongs" :key="item" >
-    <SongCard :currentTrackList="OpenedPlaylist.PlaySongs" :isPlayList="true"   :title="item.name" :idsong="item.songID" :artist="OpenedPlaylist.PlayName" />
+    <PlaylistSongCard :currentTrackList="OpenedPlaylist.PlaySongs" :isPlayList="true"   :title="item.name" :idsong="item.songID" :artist="OpenedPlaylist.PlayName" />
   </div>
 
 

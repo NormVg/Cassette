@@ -3,7 +3,7 @@ import axios from "axios";
 import * as mm from "music-metadata";
 
 export default defineEventHandler(async (event) => {
-  const { url, id } = getQuery(event);
+  const { url, id ,username} = getQuery(event);
 
   // console.log(process.env.API_BASE_URL,"asd")
   let audioUrl;
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   if (url === undefined) {
     const response = await axios.get(
-      `${host.origin}/api/box/songURL?song_id=${id}`
+      `${host.origin}/api/box/songURL?song_id=${id}&username=${username}`
     );
 
     audioUrl = response.data.src; // Assign the response data to audioUrl

@@ -8,7 +8,7 @@ export default defineEventHandler( async (event) => {
     // const { username,bcs,bci,bui } = getQuery(event)
 
     const body = await readBody(event)
-      console.log(body)
+
     const username = body.username
     const bci = body.ClientID
     const bui = body.userID
@@ -35,7 +35,7 @@ export default defineEventHandler( async (event) => {
     return true
     }
 
-    
+
 
 
 

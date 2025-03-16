@@ -1,97 +1,45 @@
-import { BoxClient } from "box-typescript-sdk-gen/lib/client.generated.js";
-import {
-  BoxCcgAuth,
-  CcgConfig,
-} from "box-typescript-sdk-gen/lib/box/ccgAuth.generated.js";
-
-const ccgConfig = new CcgConfig({
-  userId: "22482084327",
-  clientId: "v6pvmsczecu4j9qaunxw4b31mpa9pcfd",
-  clientSecret: "CvUps5dCqtgbfVp7AZpcNeTDuIJAATq5",
-});
-
-const ccgAuth = new BoxCcgAuth({ config: ccgConfig });
-const client = new BoxClient({ auth: ccgAuth });
-
-
-import { PostGress } from "~/utils/PgPool"
-
-import { UserSchema } from "../models/user.schema";
-
+import { BoxIndexWalkAllFiles, ClientBox,BoxFindItem } from "~/utils/BoxClient";
 import { songSchema } from "../models/song.schema";
+import getCurrentDateTimeString from "~/utils/syncNowDate";
+import { usernameData } from "../func/usernameData";
 
 
 
 export default defineEventHandler(async (event) => {
 
-  const {tao_id,username} = await getQuery(event)
-  var user_tao_id = ""
+  const {username} = await getQuery(event)
 
-  if (tao_id === undefined){
+  var user_cassette = await usernameData(username)
 
-    const res = await PostGress.query('SELECT * FROM "user" WHERE username = $1', [username])
-    const rep = await UserSchema.find({userID:res.rows[0].id})
+  var user_tao_id = user_cassette[0].userID;
 
-    if (rep.length === 0){
-      return "ERROR: user not found"
-     }
-     user_tao_id = res.rows[0].id
+  var user_box_user_id = user_cassette[0].box_user_id;
+  var user_box_client_id = user_cassette[0].box_client_id
+  var user_box_client_secret = user_cassette[0].box_client_secret
 
 
-
-  }else{
-    user_tao_id = tao_id
-  }
-
-
-  async function IndexWalkAllFiles(id = "0", pathcat = [], Fname = "root") {
-    const items = await client.folders.getFolderItems(id);
-    const currentFolder = { type: "folder", name: Fname, id, child: [] };
-
-    for (const item of items.entries) {
-      if (item.type === "folder") {
-        // Recursively fetch subfolders
-        const subfolder = await IndexWalkAllFiles(item.id, [...pathcat, Fname], item.name);
-        currentFolder.child.push(subfolder);
-      } else {
-        // Add files to the current folder
-        currentFolder.child.push({ type: "file", name: item.name, id: item.id });
-      }
-    }
-
-    return currentFolder;
+  if (user_cassette.length === 0) {
+    return "ERROR: user not found";
   }
 
 
 
+  const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
 
-  function getCurrentDateTimeString() {
-    const now = new Date();
-    const date = now.getDate().toString().padStart(2, '0');
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const year = now.getFullYear();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const seconds = now.getSeconds().toString().padStart(2, '0');
-    return `${date}-${month}-${year}-${hours}-${minutes}-${seconds}`;
-  }
+  const targetItem = await BoxFindItem(boxClient,"cassette")
 
 
-
-  const findCassetteFolder = await client.folders.getFolderItems("0");
-
-  const targetItem = findCassetteFolder.entries.find(item => item.name === "cassette");
 
   if (!targetItem) {
     return []
   }
   const mainFolderId = targetItem.id
-  console.log(mainFolderId)
+
 
 
 
   const nowSync = getCurrentDateTimeString()
-  const MainList = await IndexWalkAllFiles(mainFolderId);
+  const MainList = await BoxIndexWalkAllFiles(boxClient,mainFolderId);
 
   const body = {
     userID: user_tao_id,
@@ -99,7 +47,7 @@ export default defineEventHandler(async (event) => {
     index: MainList
   }
 
-  console.log(body)
+
 
 
   const SongNew = await songSchema.findOneAndUpdate(

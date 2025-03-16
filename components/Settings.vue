@@ -100,7 +100,7 @@ onMounted(async () => {
   <div id="settings-box">
 
 
-      <h2>Logged in as {{ AppBasic.SessionUsername }}</h2>
+
 
 
 
@@ -114,25 +114,7 @@ onMounted(async () => {
       <input type="file" id="imageUpload" @change="handleImageUpload" />
     </div> -->
 
-    <div id="imgUpl" @click="handleSyncBtn">
-      <label for="btn">
 
-        Sync Media <img :class="isSync ? 'rotate' : ''" :src="SyncIcon" alt="sync media">
-
-
-      </label>
-
-    </div>
-
-    <div id="imgUpl" @click="handleLogOut">
-      <label for="btn">
-
-        LogOut <img :src="Logout" alt="sync media">
-
-
-      </label>
-
-    </div>
 
     <form @submit.prevent="handleSubmit">
 
@@ -155,6 +137,28 @@ onMounted(async () => {
       <button type="submit">Save</button>
     </form>
 
+    <div id="imgUpl" @click="handleSyncBtn">
+      <label for="btn">
+
+        Sync Media <img :class="isSync ? 'rotate' : ''" :src="SyncIcon" alt="sync media">
+
+
+      </label>
+
+    </div>
+
+    <div id="imgUpl" @click="handleLogOut">
+      <label for="btn">
+
+        LogOut <img :src="Logout" alt="sync media">
+
+
+      </label>
+
+    </div>
+
+    <h2>Logged in as {{ AppBasic.SessionUsername }}</h2>
+
   </div>
 </template>
 
@@ -176,7 +180,7 @@ onMounted(async () => {
 h2{
 color: #0A090C;
 margin-left: 10px;
-font-size: 17px;
+/* font-size: 17px; */
 }
 
 #imgUpl {

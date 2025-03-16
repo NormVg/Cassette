@@ -11,35 +11,25 @@ import { thumbSchema } from "~/server/models/thumb.schema";
 
 import getCurrentDateTimeString from "~/utils/syncNowDate";
 
+import { usernameData } from "~/server/func/usernameData";
+
 export default defineEventHandler(async (event) => {
 
   const host = getRequestURL(event);
 
-  const { tao_id, username,songId } = await getQuery(event);
+  const {  username,songId } = await getQuery(event);
 
-  var user_tao_id = "";
+  var user_cassette = await usernameData(username)
 
-  if (tao_id === undefined) {
+  var user_tao_id = user_cassette[0].userID;
 
-    const res = await PostGress.query(
-      'SELECT * FROM "user" WHERE username = $1',
-      [username]
-    );
+  var user_box_user_id = user_cassette[0].box_user_id;
+  var user_box_client_id = user_cassette[0].box_client_id
+  var user_box_client_secret = user_cassette[0].box_client_secret
 
-    const rep = await UserSchema.find({ userID: res.rows[0].id });
 
-    if (rep.length === 0) {
-
-      return "ERROR: user not found";
-
-    }
-
-    user_tao_id = res.rows[0].id;
-
-  } else {
-
-    user_tao_id = tao_id;
-
+  if (user_cassette.length === 0) {
+    return "ERROR: user not found";
   }
 
 
@@ -47,7 +37,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Fetch the image from the API
-    const boxClient = await ClientBox()
+    const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
 
 
     const cass_data_folder = await BoxFolderChild(boxClient,'cassette_data','0')
@@ -56,7 +46,7 @@ export default defineEventHandler(async (event) => {
 
 
 
-    const response = await axios.get(`${host.origin}/api/download-thumb?id=${songId}`, {
+    const response = await axios.get(`${host.origin}/api/download-thumb?id=${songId}&username=${username}`, {
       responseType: "stream",
     });
 

@@ -1,63 +1,56 @@
-import { PostGress } from "~/utils/PgPool"
+import { PostGress } from "~/utils/PgPool";
 
 import { UserSchema } from "~/server/models/user.schema";
 
-
-export default defineEventHandler( async (event) => {
-    try {
-
-    // const { username,bcs,bci,bui } = getQuery(event)
-
-    const body = await readBody(event)
-      console.log(body)
-    const username = body.username
-    const bci = body.ClientID
-    const bui = body.userID
-    const bcs = body.ClientSecret
+export default defineEventHandler(async (event) => {
+  try {
 
 
-    const res = await PostGress.query('SELECT * FROM "user" WHERE username = $1', [username])
+    const body = await readBody(event);
 
-    // const rep = await UserSchema.find({userID:res.rows[0].id})
+    const username = body.username;
+    const bci = body.ClientID;
+    const bui = body.userID;
+    const bcs = body.ClientSecret;
 
+    const res = await PostGress.query(
+      'SELECT * FROM "user" WHERE username = $1',
+      [username]
+    );
 
-      const user_tao_id = res.rows[0].id
+    const user_tao_id = res.rows[0].id;
 
-    const user =  {
-      userID:user_tao_id,
+    const user = {
+      userID: user_tao_id,
       email: res.rows[0].email,
       username: res.rows[0].username,
       box_user_id: bui,
       box_client_id: bci,
-      box_client_secret: bcs
-    }
+      box_client_secret: bcs,
+    };
+
 
 
     const UserNew = await UserSchema.findOneAndUpdate(
-      { userID:user_tao_id },
+      { userID: user_tao_id },
 
       { $set: user },
 
       { new: true, runValidators: true }
-
     );
 
 
-      if (UserNew) {
-        return true
-
-      } else {
-        return false
-
-      }
 
 
+    if (UserNew) {
+
+      return true;
+
+    } else {
+
+      return false;
+    }
   } catch (error) {
-    return error
+    return error;
   }
 });
-
-
-
-
-

@@ -1,30 +1,21 @@
+import { usernameData } from "~/server/func/usernameData";
 
 
 export default defineEventHandler(async (event) => {
   try {
 
-    const { tao_id,username } = getQuery(event)
-    var userData
-    var user_tao_id = "";
+    const { username } = getQuery(event)
 
-    if (tao_id === undefined) {
-      const rep = await UserSchema.find({ username: username });
+    var user_cassette = await usernameData(username)
 
-      if (rep.length === 0) {
-        return "ERROR: user not found";
-      }
-      // return rep.userID
-      console.log(rep)
-      userData = rep
-      user_tao_id = rep[0].userID;
 
-    } else {
-      user_tao_id = tao_id;
+    if (user_cassette.length === 0) {
+      return "ERROR: user not found";
     }
 
 
 
-    return userData
+    return user_cassette
 
   } catch (error) {
     return error

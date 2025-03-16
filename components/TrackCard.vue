@@ -31,7 +31,7 @@ const AppBasic = useAppBasicStore()
 const handleClick = async () => {
 
 
-  const { data: srcURL } = await useFetch("/api/box/songURL?song_id=" + prop.idsong)
+  const { data: srcURL } = await useFetch("/api/box/songURL?song_id=" + prop.idsong+"&username="+AppBasic.SessionUsername)
 
   AppBasic.SetcurrentSong({
     name: prop.title,

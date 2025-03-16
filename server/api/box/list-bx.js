@@ -1,49 +1,31 @@
-import { BoxClient } from "box-typescript-sdk-gen/lib/client.generated.js";
-import {
-  BoxCcgAuth,
-  CcgConfig,
-} from "box-typescript-sdk-gen/lib/box/ccgAuth.generated.js";
-
-const ccgConfig = new CcgConfig({
-  userId: "22482084327",
-  clientId: "v6pvmsczecu4j9qaunxw4b31mpa9pcfd",
-  clientSecret: "CvUps5dCqtgbfVp7AZpcNeTDuIJAATq5",
-});
-
-const ccgAuth = new BoxCcgAuth({ config: ccgConfig });
-const client = new BoxClient({ auth: ccgAuth });
+import { usernameData } from "~/server/func/usernameData";
+import { ClientBox,BoxFindItem,BoxIndexWalkAllFiles } from "~/utils/BoxClient";
 
 
+export default defineEventHandler(async (event) => {
 
-export default defineEventHandler(async () => {
+  const { username } = await getQuery(event);
 
-async function IndexWalkAllFiles(id = "0", pathcat = [], Fname = "root") {
-  const items = await client.folders.getFolderItems(id);
-  const currentFolder = { type: "folder", name: Fname, id, child: [] };
 
-  for (const item of items.entries) {
-    if (item.type === "folder") {
-      // Recursively fetch subfolders
-      const subfolder = await IndexWalkAllFiles(item.id, [...pathcat, Fname], item.name);
-      currentFolder.child.push(subfolder);
-    } else {
-      // Add files to the current folder
-      currentFolder.child.push({ type: "file", name: item.name, id: item.id });
-    }
+  var user_cassette = await usernameData(username)
+
+  // var user_tao_id = user_cassette[0].userID;
+
+  var user_box_user_id = user_cassette[0].box_user_id;
+  var user_box_client_id = user_cassette[0].box_client_id
+  var user_box_client_secret = user_cassette[0].box_client_secret
+
+
+  if (user_cassette.length === 0) {
+    return "ERROR: user not found";
   }
 
-  return currentFolder;
-}
+
+    const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
+
+    const targetItem = await BoxFindItem(boxClient,"cassette")
 
 
-
-
-
-
-
-  const findCassetteFolder = await client.folders.getFolderItems("0");
-
-  const targetItem = findCassetteFolder.entries.find(item => item.name === "cassette");
 
   if (!targetItem) {
     return []
@@ -52,5 +34,5 @@ async function IndexWalkAllFiles(id = "0", pathcat = [], Fname = "root") {
   console.log(mainFolderId)
 
 
-  return await IndexWalkAllFiles(mainFolderId);
+  return await BoxIndexWalkAllFiles(boxClient,mainFolderId);
 });

@@ -5,18 +5,37 @@ import Pause from "@/assets/pause.png";
 import Mix from "@/assets/mix.png";
 import MixOff from "@/assets/suffle_off.png"
 
+
+import BtnNext from "@/assets/btn_next.png";
+import BtnPre from "@/assets/btn_pre.png";
+
+
 import LoopOff from "@/assets/loop_off.png"
 import Loop from "@/assets/loop.png";
-// import DefMusic from "@/assets/def-music.mp3";
+import AddPlayList from "@/assets/add_btn_blk.png"
+
+
 import { useAppBasicStore } from "~/store/AppBasicState";
 import DefThumb from "@/assets/def-thumb.png"
+import { usePopUpStore } from "~/store/PopUpStore";
+import MusicLoader from "./icon/MusicLoader.vue";
 
 
 const isMusicPlaying = ref(false);
 const isLoop = ref(false)
 const isSuffle = ref(false)
+const thumbnail = ref(DefThumb)
 
+const isMusicLoading = ref(false)
+
+
+
+const PopState = usePopUpStore()
 const AppBasic = useAppBasicStore()
+
+
+
+
 
 const updateTime = (e) => {
   const audio = e.target;
@@ -38,6 +57,43 @@ const updateTime = (e) => {
   playFull.textContent = `${fullMinutes}:${fullSeconds < 10 ? "0" + fullSeconds : fullSeconds}`;
 };
 
+
+const handleNextSong = async () => {
+  const currentIndex = AppBasic.currentTracklist.findIndex(item => item.id === AppBasic.currentSong.songID);
+  let nextSong = AppBasic.currentTracklist[currentIndex + 1];
+
+  if (!nextSong) {
+    nextSong = AppBasic.currentTracklist[0]; // Loop back to the first song
+  }
+
+  const { data: NextSource } = await useFetch(`/api/box/getURL?file_id=${nextSong.id}&username=${AppBasic.SessionUsername}`);
+
+  AppBasic.SetcurrentSong({
+    name: nextSong.name,
+    src: NextSource.value,
+    artist: AppBasic.currentSong.artist,
+    songID: nextSong.id,
+  });
+};
+
+const handlePreviousSong = async () => {
+  const currentIndex = AppBasic.currentTracklist.findIndex(item => item.id === AppBasic.currentSong.songID);
+  let prevSong = AppBasic.currentTracklist[currentIndex - 1];
+
+  if (!prevSong) {
+    prevSong = AppBasic.currentTracklist[AppBasic.currentTracklist.length - 1]; // Loop back to the last song
+  }
+
+  const { data: PrevSource } = await useFetch(`/api/box/getURL?file_id=${prevSong.id}&username=${AppBasic.SessionUsername}`);
+
+  AppBasic.SetcurrentSong({
+    name: prevSong.name,
+    src: PrevSource.value,
+    artist: AppBasic.currentSong.artist,
+    songID: prevSong.id,
+  });
+};
+
 const SongEnd = async (e) => {
   console.log("next song");
 
@@ -46,22 +102,8 @@ const SongEnd = async (e) => {
     music.currentTime = 0;
     music.play();
   } else {
-    const currentIndex = AppBasic.currentTracklist.findIndex(item => item.id === AppBasic.currentSong.songID);
 
-    const nextSong = AppBasic.currentTracklist[currentIndex+1]
-
-    console.log(nextSong)
-
-    const {data:NextSource} = await useFetch("/api/box/getURL?file_id="+nextSong.id)
-
-    AppBasic.SetcurrentSong({
-      name:nextSong.name,
-      src:NextSource.value,
-      artist:AppBasic.currentSong.artist,
-      songID:nextSong.id
-    })
-
-
+    await handleNextSong()
 
   }
 
@@ -104,7 +146,74 @@ const toggleLoop = () => {
 
 
 
-const thumbnail = ref(DefThumb)
+const handleAddPlaylist = async (event) => {
+  event.stopPropagation(); // Prevent triggering the parent click event
+  console.log("Menu clicked for song:", AppBasic.currentSong.name);
+
+
+  PopState.setTitleAdd2playlistPOP("Select Playlist")
+  PopState.setAdd2playlistPOP(true)
+  PopState.setSelectedItems([])
+
+
+  const { data: PlayListNow } = await useFetch("/api/mg/get-playlist?username=" + AppBasic.SessionUsername)
+  PopState.setSetlectOptions(PlayListNow.value[0].playlist)
+  // console.log(PlayListNow.value[0].playlist)
+
+
+  var OldPlayList = PlayListNow.value[0].playlist
+
+  while (PopState.Add2playlistPOP) {
+    await new Promise(resp => setInterval(resp, 100))
+  }
+
+
+  if (PopState.selectedItems.length != 0) {
+
+
+    PopState.selectedItems.forEach(element => {
+
+      // console.log(element.PlayName, element.PlaySongs)
+
+      OldPlayList.forEach(item => {
+
+        if (item.PlayName === element.PlayName) {
+          console.log(true, element.PlayName);
+
+          const newSong = {
+            name: AppBasic.currentSong.name,
+            songID: AppBasic.currentSong.songID
+          }
+          if (!item.PlaySongs.some(song => song.songID === AppBasic.currentSong.songID)) {
+            item.PlaySongs = [...item.PlaySongs, newSong];
+          } else {
+            console.log("Song already exists in the playlist:", element.PlayName);
+          }
+          // item.PlaySongs = [...item.PlaySongs, newSong];
+        }
+
+
+      });
+    });
+
+
+
+    const { data: Duser } = await useFetch("/api/mg/update-playlist?username=" + AppBasic.SessionUsername,
+      {
+        method: "POST",
+        body: OldPlayList
+      }
+    )
+    console.log(Duser, "NEW PLAYLIST")
+
+
+  }
+
+  PopState.setSelectedItems([])
+
+};
+
+
 
 const getThumbNail = async () => {
 
@@ -155,6 +264,32 @@ const onSongChange = async () => {
 
 }
 
+const setMusicLoading = (val) => {
+  console.log(val)
+  isMusicLoading.value = val
+}
+
+onMounted(() => {
+  const music = document.getElementById("audio");
+
+  music.addEventListener("waiting", () => {
+    console.log("Buffering...");
+    setMusicLoading(true)
+  });
+
+
+  music.addEventListener("playing", () => {
+    console.log("Music is ready to play.");
+    setMusicLoading(false)
+  });
+
+
+  music.addEventListener("loadstart", () => {
+    console.log("loaded data stated...");
+    setMusicLoading(true)
+  });
+})
+
 watch(srcURL, onSongChange)
 
 </script>
@@ -187,31 +322,54 @@ watch(srcURL, onSongChange)
       </div>
 
       <div id="pb-controls">
-        <div id="pb-mix" class="pb-btn" @click="toggleSuffle"  >
-          <img :src="Mix" v-if="isSuffle"  alt="mix">
-          <img :src="MixOff" v-else  alt="mix-off">
 
+
+
+
+
+        <div id="pb-mix" class="pb-btn" @click="handleAddPlaylist">
+          <!-- <img :src="Mix" v-if="isSuffle"  alt="mix">
+          <img :src="MixOff" v-else  alt="mix-off"> -->
+          <img :src="AddPlayList" alt="mix-off">
         </div>
-        <div id="pb-play-pause" class="pb-btn">
+
+        <div id="pb-previous" class="pb-btn" @click="handlePreviousSong">
+          <img :src="BtnPre" alt="mix-off">
+        </div>
+
+
+        <div id="pb-play-pause" class="pb-btn" v-if="!isMusicLoading">
 
           <img :src="Play" v-if="!isMusicPlaying" @click="toggleMusic" alt="play">
           <img :src="Pause" v-else @click="toggleMusic" alt="pause">
+        </div>
+
+        <div v-else>
+          <MusicLoader />
+        </div>
+
+
+        <div id="pb-next" class="pb-btn" @click="handleNextSong">
+
+
+          <img :src="BtnNext" alt="mix-off">
+
+        </div>
+
+        <div id="pb-loop" class="pb-btn" @click="toggleLoop">
+          <img :src="Loop" v-if="isLoop" alt="loop">
+          <img :src="LoopOff" v-else alt="loop-off">
 
         </div>
 
 
-        <div id="pb-loop" class="pb-btn" @click="toggleLoop"  >
-          <img :src="Loop" v-if="isLoop"  alt="loop">
-          <img :src="LoopOff" v-else  alt="loop-off">
 
-        </div>
 
       </div>
 
     </div>
 
-    <audio id="audio" ref="audio"  :src="AppBasic.currentSong.src" @timeupdate="updateTime"
-      @ended="SongEnd"></audio>
+    <audio id="audio" ref="audio" :src="AppBasic.currentSong.src" @timeupdate="updateTime" @ended="SongEnd"></audio>
   </div>
 </template>
 

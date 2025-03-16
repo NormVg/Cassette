@@ -1,57 +1,40 @@
-import { thumbSchema } from "~/server/models/thumb.schema"
 
-import { UserSchema } from "~/server/models/user.schema"
+import { thumbSchema } from "~/server/models/thumb.schema";
 
-import { PostGress } from "~/utils/PgPool";
+
+import { usernameData } from "../func/usernameData";
 
 export default defineEventHandler(async (event) => {
-
-
-
   try {
 
 
-const { tao_id, username,thumbID } = await getQuery(event);
 
-  var user_tao_id = "";
+    const {  username, thumbID } = await getQuery(event);
 
-  if (tao_id === undefined) {
+    var user_cassette = await usernameData(username)
 
-    const res = await PostGress.query(
-      'SELECT * FROM "user" WHERE username = $1',
-      [username]
-    );
+    var user_tao_id = user_cassette[0].userID;
 
-    const rep = await UserSchema.find({ userID: res.rows[0].id });
 
-    if (rep.length === 0) {
 
+
+    if (user_cassette.length === 0) {
       return "ERROR: user not found";
-
     }
 
-    user_tao_id = res.rows[0].id;
+    const userThumbIndex = await thumbSchema.find({ userID: user_tao_id });
+    const FindResp = userThumbIndex[0].index.find(
+      (item) => item.songID === thumbID
+    );
 
-  } else {
-
-    user_tao_id = tao_id;
-
+    if (!FindResp) {
+      return false;
+    }
+    return sendRedirect(
+      event,
+      "/api/box/getURL?file_id=" + FindResp.thumbID + "&username=" + username
+    );
+  } catch (error) {
+    return error;
   }
-
-
-  const userThumbIndex = await thumbSchema.find({userID:user_tao_id})
-  const FindResp = userThumbIndex[0].index.find(item => item.songID	=== thumbID)
-
-  if (!FindResp){
-
-    return false
-  }
-  return sendRedirect(event,"/api/box/getURL?file_id="+FindResp.thumbID)
-
-
-} catch (error) {
-  return error
-}
-
-
-})
+});

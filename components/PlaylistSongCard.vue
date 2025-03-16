@@ -34,7 +34,7 @@ const PopState = usePopUpStore()
 const AppBasic = useAppBasicStore()
 const ActiveArea = useActiveAreaStore()
 
-
+const isDeleted = ref(false)
 const thumbnail = ref(DefThumb);
 
 
@@ -42,7 +42,7 @@ const thumbnail = ref(DefThumb);
 const handleClick = async () => {
 
   console.log(prop.currentTrackList)
-
+  console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
 
 
 
@@ -185,6 +185,38 @@ const handleMenuClick = async (event) => {
 
 };
 
+const removeSongFromPlaylist = async () => {
+  const playlistName = prop.artist
+  if (!confirm("Are you sure you want to remove this song from the playlist?")) {
+    return;
+  }
+  try {
+    const { data: PlayListNow } = await useFetch("/api/mg/get-playlist?username=" + AppBasic.SessionUsername);
+    const playlists = PlayListNow.value[0].playlist;
+
+    const playlist = playlists.find(item => item.PlayName === playlistName);
+    if (!playlist) {
+      console.log("Playlist not found:", playlistName);
+      return;
+    }
+
+    const updatedSongs = playlist.PlaySongs.filter(song => song.songID !== prop.idsong);
+    playlist.PlaySongs = updatedSongs;
+
+    const { data: updatedPlaylist } = await useFetch("/api/mg/update-playlist?username=" + AppBasic.SessionUsername, {
+      method: "POST",
+      body: playlists
+    });
+
+    console.log("Updated playlist:", updatedPlaylist);
+
+    isDeleted.value = true;
+
+
+  } catch (error) {
+    console.error("Error removing song from playlist:", error);
+  }
+};
 
 
 onMounted(async () => {
@@ -195,8 +227,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div @click="handleClick" id="song-card-inner">
-    <div class="song-card">
+  <div  id="song-card-inner" v-if="!isDeleted"  >
+    <div class="song-card" @click="handleClick"  >
 
 
 

@@ -1,10 +1,16 @@
 import { usernameData } from "~/server/func/usernameData";
-import { ClientBox,BoxFileURL } from "~/utils/BoxClient";
+import {
+  ClientBox,
+  BoxFolderChild,
+} from "~/utils/BoxClient";
+
 
 
 export default defineEventHandler(async (event) => {
 
-  const { username ,song_id } = await getQuery(event);
+  try {
+
+  const { username } = await getQuery(event);
 
 
   var user_cassette = await usernameData(username)
@@ -21,13 +27,18 @@ export default defineEventHandler(async (event) => {
   }
 
 
+
+
+
   const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
 
+  const cass_data = await BoxFolderChild(boxClient, "cassette_data");
+  // console.log(cass_data)
 
-  const url =  await BoxFileURL(boxClient,song_id)
+  return true
 
+  } catch (error) {
+    return false
+    }
 
-  return {
-    src: url,
-  };
 });

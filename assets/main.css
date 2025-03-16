@@ -133,63 +133,77 @@
 
 
 
-.checkbox-wrapper-57 input[type="checkbox"] {
-  visibility: hidden;
-  display: none;
+/*  THIS THE SCROLL-BARR */
+/* width */
+::-webkit-scrollbar {
+  width: 3px;
+  opacity: 50%;
 }
 
-.checkbox-wrapper-57 *,
-.checkbox-wrapper-57 ::after,
-.checkbox-wrapper-57 ::before {
-  box-sizing: border-box;
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 15px;
 }
 
-.checkbox-wrapper-57 .container {
-  display: block;
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0A090C;
+  border-radius: 10px;
+  opacity: 50%;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #1d1a23;
+  opacity: 100%;
+}
+
+/* END OF SCHROLL BAR */
+
+
+
+.music-loader{
+  width: 40px;
+  aspect-ratio: 1;
+  --c:no-repeat linear-gradient(#000 0 0);
+  background:
+    var(--c) 0    0,
+    var(--c) 0    100%,
+    var(--c) 50%  0,
+    var(--c) 50%  100%,
+    var(--c) 100% 0,
+    var(--c) 100% 100%;
+  background-size: 8px 50%;
+  animation: l7-0 1s infinite;
   position: relative;
-  cursor: pointer;
-  font-size: 25px;
-  user-select: none;
+  overflow: hidden;
 }
-
-/* Create a custom checkbox */
-.checkbox-wrapper-57 .checkmark {
-  position: relative;
-  top: 0;
-  left: 0;
-  height: 1.3em;
-  width: 1.3em;
-  background: black;
-  border-radius: 50px;
-  transition: all 0.7s;
-  --spread: 20px;
-}
-
-/* When the checkbox is checked, add a blue background */
-.checkbox-wrapper-57 .container input:checked ~ .checkmark {
-  background: black;
-  box-shadow: -10px -10px var(--spread) 0px #5B51D8, 0 -10px var(--spread) 0px #833AB4, 10px -10px var(--spread) 0px #E1306C, 10px 0 var(--spread) 0px #FD1D1D, 10px 10px var(--spread) 0px #F77737, 0 10px var(--spread) 0px #FCAF45, -10px 10px var(--spread) 0px #FFDC80;
-}
-
-/* Create the checkmark/indicator (hidden when not checked) */
-.checkbox-wrapper-57 .checkmark::after {
+.music-loader:before {
   content: "";
   position: absolute;
-  display: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #000;
+  top: calc(50% - 4px);
+  left: -8px;
+  animation: inherit;
+  animation-name: l7-1;
 }
 
-/* Show the checkmark when checked */
-.checkbox-wrapper-57 .container input:checked ~ .checkmark::after {
-  display: block;
+@keyframes l7-0 {
+ 16.67% {background-size:8px 30%, 8px 30%, 8px 50%, 8px 50%, 8px 50%, 8px 50%}
+ 33.33% {background-size:8px 30%, 8px 30%, 8px 30%, 8px 30%, 8px 50%, 8px 50%}
+ 50%    {background-size:8px 30%, 8px 30%, 8px 30%, 8px 30%, 8px 30%, 8px 30%}
+ 66.67% {background-size:8px 50%, 8px 50%, 8px 30%, 8px 30%, 8px 30%, 8px 30%}
+ 83.33% {background-size:8px 50%, 8px 50%, 8px 50%, 8px 50%, 8px 30%, 8px 30%}
 }
 
-/* Style the checkmark/indicator */
-.checkbox-wrapper-57 .container .checkmark::after {
-  left: 0.5em;
-  top: 0.34em;
-  width: 0.25em;
-  height: 0.5em;
-  border: solid #f0f0f0;
-  border-width: 0 0.15em 0.15em 0;
-  transform: rotate(45deg);
+@keyframes l7-1 {
+ 20%  {left:0px}
+ 40%  {left:calc(50%  - 4px)}
+ 60%  {left:calc(100% - 8px)}
+ 80%,
+ 100% {left:100%}
 }
+

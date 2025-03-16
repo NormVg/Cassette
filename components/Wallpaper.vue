@@ -1,14 +1,18 @@
 <script setup>
 import DefWall from "@/assets/wall2.gif";
+import { useAppBasicStore } from "~/store/AppBasicState";
 
 
 const wallpaper = ref( DefWall)
+
+const AppBasic = useAppBasicStore()
 
 
 const fetchWallpaper = async () => {
   try {
 
-    const {data:src} = await useFetch("/api/box/getWallpaper")
+    const {data:src} = await useFetch("/api/box/getWallpaper?username="+AppBasic.SessionUsername)
+
     if(src.value === false){
       wallpaper.value = DefWall
     }else{
