@@ -1,6 +1,7 @@
 import { PostGress } from "~/utils/PgPool"
 
-import { UserSchema } from "../models/user.schema";
+import { UserSchema } from "~/server/models/user.schema";
+
 
 export default defineEventHandler( async (event) => {
     try {
@@ -17,29 +18,40 @@ export default defineEventHandler( async (event) => {
 
     const res = await PostGress.query('SELECT * FROM "user" WHERE username = $1', [username])
 
-    const rep = await UserSchema.find({userID:res.rows[0].id})
+    // const rep = await UserSchema.find({userID:res.rows[0].id})
 
 
-    if (rep.length === 0){
-      // http://localhost:3000/api/setupUser?username=vishnu_gupta_vg&bcs=BCS&bci=BCI&bui=BUIII
+      const user_tao_id = res.rows[0].id
 
-      const user =  {
-      userID:res.rows[0].id,
+    const user =  {
+      userID:user_tao_id,
       email: res.rows[0].email,
       username: res.rows[0].username,
       box_user_id: bui,
       box_client_id: bci,
       box_client_secret: bcs
     }
-    await new UserSchema(user).save()
-    return true
-    }
-
-    
 
 
+    const UserNew = await UserSchema.findOneAndUpdate(
+      { userID:user_tao_id },
 
-    return false
+      { $set: user },
+
+      { new: true, runValidators: true }
+
+    );
+
+
+      if (UserNew) {
+        return true
+
+      } else {
+        return false
+
+      }
+
+
   } catch (error) {
     return error
   }

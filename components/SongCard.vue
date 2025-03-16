@@ -19,9 +19,13 @@ const prop = defineProps(
       type: String,
       default: "1802275278415"
     },
-    currentTrackList:{
-      type:Object,
-      default:undefined
+    currentTrackList: {
+      type: Object,
+
+    },
+    isPlayList: {
+      default: false,
+      type: Boolean
     }
   }
 );
@@ -30,6 +34,11 @@ const PopState = usePopUpStore()
 const AppBasic = useAppBasicStore()
 const ActiveArea = useActiveAreaStore()
 
+
+const thumbnail = ref(DefThumb);
+
+
+
 const handleClick = async () => {
 
   console.log(prop.currentTrackList)
@@ -37,22 +46,32 @@ const handleClick = async () => {
 
 
 
-    var mainList = []
+  var mainList = []
 
-    prop.currentTrackList.forEach(element => {
-      if (element.type === 'file'){
+  prop.currentTrackList.forEach(element => {
+    if (element.type === 'file') {
 
       mainList.push({
-        name:element.name,
-        id:element.id,
-        artist:prop.artist
+        name: element.name,
+        id: element.id,
+        artist: prop.artist
       })
+    } else if (prop.isPlayList === true) {
+
+      mainList.push({
+        name: element.name,
+        id: element.songID,
+        artist: prop.artist
+      })
+
     }
-    });
 
 
-    console.log(mainList)
-    AppBasic.SetCurrentTrackList(mainList)
+  });
+
+
+  console.log(mainList)
+  AppBasic.SetCurrentTrackList(mainList)
 
 
 
@@ -72,10 +91,6 @@ const handleClick = async () => {
   ActiveArea.setCurrentArea('TRACKLIST')
 }
 
-
-
-
-const thumbnail = ref(DefThumb); // Make sure it starts as a reactive variable
 
 
 const getThumbNail = async () => {
@@ -105,15 +120,63 @@ const getThumbNail = async () => {
 }
 
 
-
-
-
-
-
-const handleMenuClick = (event) => {
+const handleMenuClick = async (event) => {
   event.stopPropagation(); // Prevent triggering the parent click event
   console.log("Menu clicked for song:", prop.title);
-  // Add logic to handle the menu click, e.g., show a dropdown or options menu
+
+  // alert("add playlist "+prop.title)
+
+  PopState.setTitleAdd2playlistPOP("Select Playlist")
+  PopState.setAdd2playlistPOP(true)
+  PopState.setSelectedItems([])
+  const { data: PlayListNow } = await useFetch("/api/mg/get-playlist?username=" + AppBasic.SessionUsername)
+  PopState.setSetlectOptions(PlayListNow.value[0].playlist)
+  console.log(PlayListNow.value[0].playlist)
+
+
+  var OldPlayList = PlayListNow.value[0].playlist
+
+  while (PopState.Add2playlistPOP) {
+    await new Promise(resp => setInterval(resp, 100))
+  }
+
+
+  if (PopState.selectedItems.length != 0) {
+
+
+    PopState.selectedItems.forEach(element => {
+      console.log(element.PlayName, element.PlaySongs)
+
+      OldPlayList.forEach(item => {
+
+        if (item.PlayName === element.PlayName) {
+          console.log(true, element.PlayName);
+
+          const newSong = {
+            name: prop.title,
+            songID: prop.idsong
+          }
+
+          item.PlaySongs = [...item.PlaySongs, newSong];
+        }
+
+
+      });
+    });
+
+    const { data: Duser } = await useFetch("/api/mg/update-playlist?username=" + AppBasic.SessionUsername,
+      {
+        method: "POST",
+        body: OldPlayList
+      }
+    )
+    console.log(Duser, "NEW PLAYLIST")
+
+
+  }
+
+  PopState.setSelectedItems([])
+
 };
 
 
@@ -126,8 +189,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div @click="handleClick" id="song-card-inner" >
-  <div class="song-card" >
+  <div @click="handleClick" id="song-card-inner">
+    <div class="song-card">
 
 
 
@@ -148,7 +211,7 @@ onMounted(async () => {
     </div>
 
 
-    <div id="song-menu-box" @click="handleMenuClick"  >
+    <div id="song-menu-box" @click="handleMenuClick">
       <img :src="add_btn" alt="">
     </div>
 
@@ -157,12 +220,11 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
-#song-menu-box img{
+#song-menu-box img {
   height: 30px;
 }
 
-#song-card-inner{
+#song-card-inner {
   display: flex;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -176,11 +238,11 @@ onMounted(async () => {
 
 }
 
-#song-card-inner:hover #song-menu-box{
+#song-card-inner:hover #song-menu-box {
   opacity: 1;
 }
 
-#song-menu-box{
+#song-menu-box {
   height: 60px;
   user-select: none;
   opacity: 0;
@@ -196,28 +258,19 @@ onMounted(async () => {
   /* border: 1px solid green; */
 }
 
-#song-menu-box:hover{
+#song-menu-box:hover {
   color: grey;
 }
 
-#song-menu-box:active{
+#song-menu-box:active {
   color: #AD2831;
 }
 
 
-/* .song-card:hover #song-menu-box{
-  display: flex;
-} */
 
 
 .song-card {
   display: flex;
-  /* margin-top: 10px;
-  margin-bottom: 10px;
-  margin-left: 10px;
-  margin-right: 10px; */
-  /* padding: 10px; */
-
   margin-right: 10px;
   width: 100%;
   border-radius: 10px;
@@ -231,6 +284,7 @@ onMounted(async () => {
   background-color: #17151b;
 
 }
+
 .song-card:active {
   scale: 0.98;
 

@@ -4,17 +4,20 @@ import { ref } from 'vue';
 const userID = ref('');
 const ClientId = ref('');
 const ClientCred = ref('');
+
+
 const imageFile = ref(null);
 
-import UploadIcon from "@/assets/upload.png"
 import SyncIcon from "@/assets/sync.png"
 import Logout from "@/assets/logout.png"
 import { useAppBasicStore } from '~/store/AppBasicState';
-import { useActiveAreaStore } from '~/store/ActiveAreaState';
+
 
 
 const AppBasic = useAppBasicStore()
-const ActiveAreaStore = useActiveAreaStore()
+// const ActiveAreaStore = useActiveAreaStore()
+
+
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -29,7 +32,7 @@ const isSync = ref(false)
 const handleSubmit = async () => {
 
 
-  // Perform your form submission logic here
+  // // Perform your form submission logic here
   console.log('Form submitted', {
     // image: imageFile.value,
     userID: userID.value,
@@ -37,7 +40,7 @@ const handleSubmit = async () => {
     ClientCred: ClientCred.value,
   });
 
-  const { data: resp } = await useFetch("/api/setupUser", {
+  const { data: resp } = await useFetch("/api/mg/update-user", {
     method: "POST",
     body: {
       "username": AppBasic.SessionUsername.trim(),
@@ -47,19 +50,22 @@ const handleSubmit = async () => {
     }
   })
 
-  if (resp.value) {
-    AppBasic.setIsNewUser(false)
-    ActiveAreaStore.setCurrentArea("FOLDER")
-  }
 
+  await FetchUserData()
+  await handleSyncBtn()
 
 
 };
 
 
+const FetchUserData = async () => {
+  const {data:userData} = await useFetch("/api/mg/getuser?username="+AppBasic.SessionUsername)
 
+  userID.value = userData.value[0].box_user_id	;
+  ClientId.value = userData.value[0].box_client_id	;
+  ClientCred.value = userData.value[0].box_client_secret	;
 
-
+}
 
 const handleLogOut = () => {
   navigateTo("/logout")
@@ -77,12 +83,28 @@ const handleSyncBtn = async () => {
   }
 }
 
+
+onMounted(async () => {
+  await FetchUserData()
+})
+
+
+
+
+
+
+
 </script>
 
 <template>
   <div id="settings-box">
 
-    <div id="imgUpl">
+
+      <h2>Logged in as {{ AppBasic.SessionUsername }}</h2>
+
+
+
+    <!-- <div id="imgUpl">
       <label for="imageUpload">
 
         Upload Wallpaper <img :src="UploadIcon" alt="upload wallpaper">
@@ -90,7 +112,7 @@ const handleSyncBtn = async () => {
 
       </label>
       <input type="file" id="imageUpload" @change="handleImageUpload" />
-    </div>
+    </div> -->
 
     <div id="imgUpl" @click="handleSyncBtn">
       <label for="btn">
@@ -117,17 +139,17 @@ const handleSyncBtn = async () => {
 
       <div class="input-group">
         <label for="userID">User ID:</label>
-        <input type="text" id="userID" v-model="userID" />
+        <input type="password" id="userID" v-model="userID" />
       </div>
 
       <div class="input-group">
         <label for="ClientId">Client ID:</label>
-        <input type="text" id="ClientId" v-model="ClientId" />
+        <input type="password" id="ClientId" v-model="ClientId" />
       </div>
 
       <div class="input-group">
         <label for="ClientCred">Client Secret:</label>
-        <input type="text" id="ClientCred" v-model="ClientCred" />
+        <input type="password" id="ClientCred" v-model="ClientCred" />
       </div>
 
       <button type="submit">Save</button>
@@ -151,6 +173,11 @@ const handleSyncBtn = async () => {
   animation: rotate 2s linear infinite
 }
 
+h2{
+color: #0A090C;
+margin-left: 10px;
+font-size: 17px;
+}
 
 #imgUpl {
   margin-bottom: 20px;

@@ -20,7 +20,7 @@ const AppBaiscStore = useAppBasicStore()
       <img :src="logo" alt="logo">
     </div>
 
-    <div id="menu-box" v-if="!AppBaiscStore.isNewUser"  >
+    <div id="menu-box">
 
       <div id="menu-item" @click="()=>{ActiveAreaStore.setCurrentArea('TRACKLIST')}" >
         <img :src="IconTr" title="Tracklist">
@@ -34,9 +34,6 @@ const AppBaiscStore = useAppBasicStore()
         <img :src="IconPlayList" title="Playlist">
       </div>
 
-      <div id="menu-item" @click="()=>{ActiveAreaStore.setCurrentArea('ADD MUSIC')}"  >
-        <img :src="IconAdd" title="Add Music">
-      </div>
 
 
     </div>

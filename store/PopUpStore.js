@@ -5,13 +5,22 @@ export const usePopUpStore = defineStore('pop-up-store', () => {
 
   const inputPOP = ref(false)
   const TitielInputPOP = ref("")
+  const inputResponse = ref("")
+
+
   const Add2playlistPOP = ref(false)
   const TitleAdd2playlistPOP = ref('')
-
+  const selectedItems = ref([])
   const selectOptions = ref([])
 
-  const selectedItems = ref([])
-  const inputResponse = ref("")
+
+  const isFullLoader = ref(false)
+
+  function setFullLoader(value) {
+    isFullLoader.value = value
+  }
+
+
 
 
   const setSetlectOptions = (items) =>{
@@ -53,6 +62,9 @@ export const usePopUpStore = defineStore('pop-up-store', () => {
     setTitleAdd2playlistPOP, TitleAdd2playlistPOP,
     setSelectedItems, selectedItems,
     setInputResponse, inputResponse,
-    selectOptions,setSetlectOptions
+    selectOptions,setSetlectOptions,
+
+
+    isFullLoader,setFullLoader
   }
 })

@@ -1,17 +1,30 @@
 
 
-
-import { PostGress } from "~/utils/PgPool"
-
 export default defineEventHandler(async (event) => {
   try {
 
-    const { username } = getQuery(event)
+    const { tao_id,username } = getQuery(event)
+    var userData
+    var user_tao_id = "";
 
-    const res = await PostGress.query('SELECT * FROM "user" WHERE username = $1', [username])
+    if (tao_id === undefined) {
+      const rep = await UserSchema.find({ username: username });
+
+      if (rep.length === 0) {
+        return "ERROR: user not found";
+      }
+      // return rep.userID
+      console.log(rep)
+      userData = rep
+      user_tao_id = rep[0].userID;
+
+    } else {
+      user_tao_id = tao_id;
+    }
 
 
-    return res.rows
+
+    return userData
 
   } catch (error) {
     return error

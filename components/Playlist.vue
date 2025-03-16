@@ -3,7 +3,7 @@
 import AddBtn from "@/assets/add_btn.png"
 import { useAppBasicStore } from '~/store/AppBasicState';
 import { usePopUpStore } from "~/store/PopUpStore";
-
+import backIcon from '@/assets/back_btn.png'
 
 
 const AppBasic = useAppBasicStore()
@@ -76,11 +76,18 @@ const OpenPlaylist = (param)=>{
   isPlayListOpen.value =true
 }
 
+
+const goBack = () =>{
+  console.log("closed")
+  OpenedPlaylist.value = {}
+  isPlayListOpen.value =false
+}
+
 onMounted(async () => {
   loadPlayList()
 })
 
-import backIcon from '@/assets/back_btn.png'
+
 </script>
 
 <template>
@@ -107,7 +114,7 @@ import backIcon from '@/assets/back_btn.png'
       </div>
 
   <div v-for="item in OpenedPlaylist.PlaySongs" :key="item" >
-    <SongCard  :title="item.name" :idsong="item.songID" :artist="OpenedPlaylist.PlayName" />
+    <SongCard :currentTrackList="OpenedPlaylist.PlaySongs" :isPlayList="true"   :title="item.name" :idsong="item.songID" :artist="OpenedPlaylist.PlayName" />
   </div>
 
 

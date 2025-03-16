@@ -5,6 +5,7 @@ import { useAppBasicStore } from '~/store/AppBasicState';
 import Playlist from './Playlist.vue';
 import InputPop from './popup/InputPop.vue';
 import PlaylistSelect from './popup/PlaylistSelect.vue';
+import Loader from './popup/loader.vue';
 
 const ActiveAreaStore = useActiveAreaStore();
 const AppBasic = useAppBasicStore()
@@ -23,6 +24,8 @@ const postload = async () => {
 
 
   AppBasic.setIsNewUser(!userCheck.value)
+  // AppBasic.setIsNewUser(true)
+
 
   if (!userCheck.value) {
     alert("Please Fill Box Credintials to Use the app")
@@ -40,18 +43,17 @@ onMounted(async () => {
 
 })
 
-const items = ref([
-  'Item 1',
-  'Item 2',
-  'Item 3',
-  'Item 4',
-  'Item 5',
-]);
 
 </script>
 
 <template>
   <div v-if="!isPreload" >
+
+
+  <div v-if="AppBasic.isNewUser"  >
+    <OnBoarding/>
+  </div>
+  <span v-else >
 
     <SideBar />
     <Wallpaper />
@@ -64,11 +66,16 @@ const items = ref([
     </ActiveArea>
 
     <InputPop/>
-    <PlaylistSelect :items="items" title="asd" />
+    <PlaylistSelect  />
+    <Loader/>
+
+  </span>
 
 
 
   </div>
+
+
 
   <div class="loading-screen" v-else  >
 
