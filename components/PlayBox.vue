@@ -578,7 +578,22 @@ watch(srcURL, onSongChange)
   margin-top: 10px;
   flex-direction: column;
   /* margin:  10px auto; */
+  animation: slideInFromBottom .7s forwards;
 }
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
 
 #thumbnail-box {
   width: 70%;

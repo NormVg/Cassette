@@ -11,6 +11,10 @@ export default defineEventHandler(async (event) => {
 
   if (request.pathname.startsWith('/api')) {
 
+    if (request.pathname.startsWith('/api/auth/')){
+      return
+    }
+
     if (!session || !session.user) {
       throw createError({
         statusCode: 401,
@@ -22,5 +26,5 @@ export default defineEventHandler(async (event) => {
 
 
 
-  // console.log('New request: ' + getRequestURL(event), session);
+
 });

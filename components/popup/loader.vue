@@ -1,11 +1,14 @@
 <template>
-  <div v-if="PopState.isFullLoader" class="popup-overlay">
-    <div class="popup">
+  <Transition>
 
-      <div class="Homeloader"  ></div>
+    <div v-if="PopState.isFullLoader" class="popup-overlay">
+      <div class="popup">
+
+        <div class="Homeloader"  ></div>
+      </div>
     </div>
-  </div>
-</template>
+  </Transition>
+  </template>
 
 
 <script setup>

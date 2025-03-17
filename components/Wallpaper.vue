@@ -55,10 +55,22 @@ fetchWallpaper()
   /* background-image: url(wallpaper); */
   background-position: 50% 20%;
   background-repeat: no-repeat;
-  background-size: cover
-;
+  background-size: cover;
+
+  animation: slideInFromTop .8s forwards;
 }
 
 
-
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
 </style>

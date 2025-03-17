@@ -110,5 +110,21 @@ img {
   flex-direction: column;
   padding-top: 10px;
   padding-bottom: 10px;
+  transition: all ease-in-out 200ms;
+
+  animation: slideInFromLeft 1s forwards;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translate(-100%, -50%);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    transform: translate(0, -50%);
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 </style>

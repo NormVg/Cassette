@@ -1,4 +1,8 @@
 <template>
+
+<Transition>
+
+
   <div v-if="PopState.inputPOP" class="popup-overlay">
     <div class="popup">
       <h2>{{ PopState.TitielInputPOP }}</h2>
@@ -10,6 +14,7 @@
       </div>
     </div>
   </div>
+</Transition>
 </template>
 
 
