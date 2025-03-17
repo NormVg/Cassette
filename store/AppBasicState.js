@@ -11,12 +11,7 @@ export const useAppBasicStore = defineStore("app-basic-state", () => {
 
   const currentTracklist = ref([])
 
-  const isMusicLoading = ref(false)
 
-
-  const setIsMusicLoading =  (params) => {
-      isMusicLoading.value = params
-  }
 
 
   const SetCurrentTrackList = (params) => {
@@ -71,7 +66,5 @@ export const useAppBasicStore = defineStore("app-basic-state", () => {
     currentTracklist,
     SetCurrentTrackList,
 
-    isMusicLoading,
-    setIsMusicLoading
   };
 });

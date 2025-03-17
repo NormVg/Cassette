@@ -4,6 +4,7 @@ import { useActiveAreaStore } from "~/store/ActiveAreaState";
 import { useAppBasicStore } from "~/store/AppBasicState";
 import add_btn from "@/assets/add_btn.png"
 import { usePopUpStore } from "~/store/PopUpStore";
+import { musicFileExists, imageFileExists, downloadAndSaveImage, downloadAndSaveMusic, getImageFileSrc, getMusicFileSrc } from "~/utils/myHandlerOPFS";
 
 const prop = defineProps(
   {
@@ -22,10 +23,6 @@ const prop = defineProps(
     currentTrackList: {
       type: Object,
 
-    },
-    isPlayList: {
-      default: false,
-      type: Boolean
     }
   }
 );
@@ -43,48 +40,45 @@ const handleClick = async () => {
 
   console.log(prop.currentTrackList)
 
-
-
-
   var mainList = []
 
   prop.currentTrackList.forEach(element => {
-    if (element.type === 'file') {
 
-      mainList.push({
-        name: element.name,
-        id: element.id,
-        artist: prop.artist
-      })
-    } else if (prop.isPlayList === true) {
 
-      mainList.push({
-        name: element.name,
-        id: element.songID,
-        artist: prop.artist
-      })
-
-    }
+    mainList.push({
+      name: element.name,
+      id: element.id,
+      artist: prop.artist
+    })
 
 
   });
 
 
-  console.log(mainList)
+
   AppBasic.SetCurrentTrackList(mainList)
 
 
 
+  const musicOPFS = await musicFileExists(prop.title)
+  console.log(musicOPFS, "MUSIC FILE IN OPFS")
 
 
-  console.log(prop.idsong)
 
-  const { data: srcURL } = await useFetch("/api/box/songURL?song_id=" + prop.idsong+"&username="+AppBasic.SessionUsername)
+  if (!musicOPFS) {
+    console.log('MUSIC NOT FOUND DOWNLOADING MUSIC')
+    const { data: srcURL } = await useFetch("/api/box/songURL?song_id=" + prop.idsong + "&username=" + AppBasic.SessionUsername)
+    console.log("MUSIC DOWNLOADED SAVING OPFS");
+    await downloadAndSaveMusic(srcURL.value.src, prop.title)
+  }
+
+  console.log('MUSIC LOADING FROM OPFS');
+  const musicSrc = await getMusicFileSrc(prop.title)
 
   AppBasic.SetcurrentSong({
     name: prop.title,
     artist: prop.artist,
-    src: srcURL.value.src,
+    src: musicSrc,
     songID: prop.idsong
   })
 
@@ -96,17 +90,40 @@ const handleClick = async () => {
 const getThumbNail = async () => {
 
 
-
   try {
-    // console.log("SONG ID",AppBasic.currentSong.songID)
-    const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + prop.idsong)
 
-    if (thumb_data.value === false) {
+    const thumbOPFS = await imageFileExists(`${prop.idsong}.png`)
+    console.log(thumbOPFS, "THUMB FILE IN OPFS")
+
+
+
+    if (!thumbOPFS) {
+      // console.log('THUMB NOT FOUND DOWNLOADING MUSIC')
+      // const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + prop.idsong)
+      // console.log("THUMB DOWNLOADED SAVING OPFS");
+
+
+      // if (thumb_data.value === false) {
       thumbnail.value = DefThumb
+      return
 
+      // } else {
+      // console.log(thumb_data.value)
+      // await downloadAndSaveImage(thumb_data.value,`${prop.idsong}.png`)
+
+
+      // }
     } else {
-      console.log(thumb_data.value)
-      thumbnail.value = thumb_data.value
+
+
+      console.log('THUMB LOADING FROM OPFS');
+      // const fileHealth = await validateAndDeleteFile("cassetteMusic", `${prop.idsong}.png`);
+      // if (fileHealth){
+      const thumbSrc = await getImageFileSrc(`${prop.idsong}.png`)
+      console.log(thumbSrc, prop.title)
+      thumbnail.value = thumbSrc
+
+
 
     }
 

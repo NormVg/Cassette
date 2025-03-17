@@ -1,85 +1,52 @@
-
-
-import { BoxClient } from "box-typescript-sdk-gen/lib/client.generated.js";
-import {
-  BoxCcgAuth,
-  CcgConfig,
-} from "box-typescript-sdk-gen/lib/box/ccgAuth.generated.js";
-
-
-
-const API_URL = "http://localhost:3000/api/thumb"; // Update this
-const songId = "1802287426960"; // Replace with actual song ID
-
-
-
-
-const ccgConfig = new CcgConfig({
-  userId: "22482084327",
-  clientId: "v6pvmsczecu4j9qaunxw4b31mpa9pcfd",
-  clientSecret: "CvUps5dCqtgbfVp7AZpcNeTDuIJAATq5",
-});
-
-const ccgAuth = new BoxCcgAuth({ config: ccgConfig });
-const client = new BoxClient({ auth: ccgAuth });
-
-
-
-
-
-import axios from "axios";
-import mime from "mime-types"; // Helps get correct file extension
-
-
-async function fetchAndUploadImage() {
-  try {
-    // Fetch the image from the API
-    const response = await axios.get(`${API_URL}?id=${songId}`, {
-      responseType: "stream",
-    });
-
-    // Get MIME type from headers
-    const mimeType = response.headers["content-type"];
-    if (!mimeType.startsWith("image/")) {
-      console.error("❌ No album art found!");
-      return;
-    }
-
-    console.log("✅ Image stream received from API");
-
-    // Determine correct file extension
-    const extension = mime.extension(mimeType) || "bin"; // Fallback to .bin
-    const fileName = `album-art.${extension}`;
-
-    // Directly pass the image stream to upload function
-    await uploadFile(response.data, fileName);
-  } catch (error) {
-    console.error("❌ Failed to fetch or upload album art:", error.message);
-  }
-}
-
-async function uploadFile(stream, fileName, toId = "0") {
-  const attrs = { name: fileName, parent: { id: toId } };
-
-  const body = {
-    attributes: attrs,
-    file: stream, // Pass the stream directly
-  };
-
-  // Mocked client.uploads.uploadFile() function
-  const files = await client.uploads.uploadFile(body);
-  const uploadedFile = files.entries[0];
-
-  console.log(`📤 File uploaded with id ${uploadedFile.id}, name ${uploadedFile.name}`);
-  return uploadedFile;
-}
-
-// Run the process
-fetchAndUploadImage();
-
-
-
-
-
-// Run the process
-fetchAndUploadImage();
+[
+  "cassetteMusic/I Miss The Old Kanye (Edit).mp3",
+  "cassetteMusic/E-ER Ft. Ski Mask The Slump God, Danny Towers, Lil Yachty.mp3",
+  "cassetteMusic/Fresco Trey - Need You (Official Music Video).mp3",
+  "cassetteMusic/Backseat - bygsmyle Ft Rv Janaab (Lyrical Video).mp3",
+  "cassetteMusic/Automatic -Byg Smyle Ft. Young Nug _ Official Music Video.mp3",
+  "cassetteMusic/Amen - Byg Smyle.mp3",
+  "cassetteImage/1802273702378.png",
+  "cassetteImage/1802287426960.png",
+  "cassetteImage/1802272165432.png",
+  "cassetteImage/1802279514218.png",
+  "cassetteImage/1802273739923.png",
+  "cassetteImage/1802268807693.png",
+  "cassetteImage/1802272705341.png",
+  "cassetteImage/1802270972886.png",
+  "cassetteImage/1802272240154.png",
+  "cassetteImage/1802274930782.png",
+  "cassetteImage/1753805680273.png",
+  "cassetteImage/1753803815250.png",
+  "cassetteImage/1753805398830.png",
+  "cassetteImage/1753809006729.png",
+  "cassetteImage/1753810216670.png",
+  "cassetteImage/1753808632176.png",
+  "cassetteImage/1753805610100.png",
+  "cassetteImage/1753809906574.png",
+  "cassetteImage/1753807951123.png",
+  "cassetteImage/1753809870067.png",
+  "cassetteImage/1753803517621.png",
+  "cassetteImage/1802273191151.png",
+  "cassetteImage/1802273409022.png",
+  "cassetteImage/1802273931608.png",
+  "cassetteImage/1802461664674.png",
+  "cassetteImage/1802456250324.png",
+  "cassetteImage/1802454618048.png",
+  "cassetteImage/1802465649330.png",
+  "cassetteImage/1802465598541.png",
+  "cassetteImage/1802464407726.png",
+  "cassetteImage/1754274100429.png",
+  "cassetteImage/1754279727883.png",
+  "cassetteImage/1754282565253.png",
+  "cassetteImage/1754285051919.png",
+  "cassetteImage/1754274066897.png",
+  "cassetteImage/1754289932796.png",
+  "cassetteImage/1754282193339.png",
+  "cassetteImage/1754272727459.png",
+  "cassetteImage/1754284091405.png",
+  "cassetteImage/1754281477355.png",
+  "cassetteImage/1754285068370.png",
+  "cassetteImage/1754272494449.png",
+  "cassetteImage/1754262807967.png",
+  "cassetteImage/1754271474016.png"
+]

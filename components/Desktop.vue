@@ -13,6 +13,15 @@ const AppBasic = useAppBasicStore()
 const isPreload = ref(true)
 
 
+const checkUserBox = async () => {
+  const {data:boxCreds} = await useFetch("/api/box/checkBOX?username="+AppBasic.SessionUsername)
+
+  if (!boxCreds.value){
+    alert("Cannot fetch data from BOX. Credentials are wrong, please check.")
+  }
+
+}
+
 const postload = async () => {
   const { data: duser } = await authClient.useSession(useFetch)
 
@@ -24,12 +33,12 @@ const postload = async () => {
 
 
   AppBasic.setIsNewUser(!userCheck.value)
-  // AppBasic.setIsNewUser(true)
+
 
 
   if (!userCheck.value) {
     alert("Please Fill Box Credintials to Use the app")
-    ActiveAreaStore.setCurrentArea("SETTINGS")
+    ActiveAreaStore.setCurrentArea("FOLDER")
   }
 
 

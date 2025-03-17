@@ -11,12 +11,13 @@ const imageFile = ref(null);
 import SyncIcon from "@/assets/sync.png"
 import Logout from "@/assets/logout.png"
 import { useAppBasicStore } from '~/store/AppBasicState';
-
+import { deleteAllFiles,walkRootDirectory } from '~/utils/myHandlerOPFS';
+import { usePopUpStore } from '~/store/PopUpStore';
 
 
 const AppBasic = useAppBasicStore()
 // const ActiveAreaStore = useActiveAreaStore()
-
+const PopState = usePopUpStore()
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
@@ -84,6 +85,17 @@ const handleSyncBtn = async () => {
 }
 
 
+
+const deleteCasheData = async () =>{
+  PopState.setFullLoader(true)
+  console.log(await walkRootDirectory())
+  await deleteAllFiles("cassetteMusic")
+  await deleteAllFiles("cassetteImage")
+  PopState.setFullLoader(false)
+  alert("Browser cache has been deleted successfully!");
+}
+
+
 onMounted(async () => {
   await FetchUserData()
 })
@@ -141,6 +153,17 @@ onMounted(async () => {
       <label for="btn">
 
         Sync Media <img :class="isSync ? 'rotate' : ''" :src="SyncIcon" alt="sync media">
+
+
+      </label>
+
+    </div>
+
+    <div id="imgUpl" @click="deleteCasheData">
+      <label for="btn">
+
+        Delete Browser Cache
+
 
 
       </label>

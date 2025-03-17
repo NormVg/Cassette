@@ -218,8 +218,62 @@ const handleAddPlaylist = async (event) => {
 const getThumbNail = async () => {
 
 
+    const thumbOPFS  = await imageFileExists(`${AppBasic.currentSong.songID}.png`)
+    console.log(thumbOPFS,"THUMB FILE IN OPFS")
+
+
+    if (!thumbOPFS){
+      // console.log('THUMB NOT FOUND DOWNLOADING MUSIC')
+
+      const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + AppBasic.currentSong.songID)
+
+      // console.log("THUMB DOWNLOADED SAVING OPFS");
+
+      if (thumb_data.value === false) {
+        const { data: resp } = await useFetch(`/api/box/saveThumb?songId=${AppBasic.currentSong.songID}&username=${AppBasic.SessionUsername}`)
+
+        if (resp.value == true) {
+
+          const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + AppBasic.currentSong.songID)
+
+
+          await downloadAndSaveImage(thumb_data.value,`${AppBasic.currentSong.songID}.png`)
+          // thumbnail.value = thumb_data.value
+
+        } else {
+          thumbnail.value = DefThumb
+          return
+        }
+
+      } else {
+        // console.log(thumb_data.value)
+        // thumbnail.value = thumb_data.value
+        await downloadAndSaveImage(thumb_data.value,`${AppBasic.currentSong.songID}.png`)
+
+      }
+
+
+
+
+      // if (thumb_data.value === false) {
+      //   thumbnail.value = DefThumb
+      //   return
+
+      // } else {
+      //   console.log(thumb_data.value)
+      //   await downloadAndSaveImage(thumb_data.value,`${prop.idsong}.png`)
+      // }
+
+
+
+
+    }
+
+    console.log('THUMB LOADING FROM OPFS');
+    thumbnail.value = await getImageFileSrc(`${AppBasic.currentSong.songID}.png`)
 
   try {
+
     // console.log("SONG ID",AppBasic.currentSong.songID)
     const { data: thumb_data } = await useFetch("/api/checkAndGetThumb?username=" + AppBasic.SessionUsername + "&thumbID=" + AppBasic.currentSong.songID)
 
