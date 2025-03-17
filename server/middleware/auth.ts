@@ -1,0 +1,26 @@
+import { auth } from "~/utils/auth";
+
+export default defineEventHandler(async (event) => {
+  const session = await auth.api.getSession({
+    headers: event.headers,
+  });
+
+  const request = getRequestURL(event)
+
+
+
+  if (request.pathname.startsWith('/api')) {
+
+    if (!session || !session.user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Unauthorized",
+      });
+    }
+
+  }
+
+
+
+  // console.log('New request: ' + getRequestURL(event), session);
+});
