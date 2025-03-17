@@ -44,12 +44,14 @@ const handleClick = async () => {
 
   prop.currentTrackList.forEach(element => {
 
+    if (element.type === 'file') {
 
-    mainList.push({
-      name: element.name,
-      id: element.id,
-      artist: prop.artist
-    })
+      mainList.push({
+        name: element.name,
+        id: element.id,
+        artist: prop.artist
+      })
+    }
 
 
   });

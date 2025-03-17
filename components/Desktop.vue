@@ -1,101 +1,93 @@
 <script setup>
-import { FileBase } from 'box-typescript-sdk-gen/lib/schemas/fileBase.generated';
-import { useActiveAreaStore } from '~/store/ActiveAreaState';
-import { useAppBasicStore } from '~/store/AppBasicState';
-import Playlist from './Playlist.vue';
-import InputPop from './popup/InputPop.vue';
-import PlaylistSelect from './popup/PlaylistSelect.vue';
-import Loader from './popup/loader.vue';
+import { FileBase } from "box-typescript-sdk-gen/lib/schemas/fileBase.generated";
+import { useActiveAreaStore } from "~/store/ActiveAreaState";
+import { useAppBasicStore } from "~/store/AppBasicState";
+import Playlist from "./Playlist.vue";
+import InputPop from "./popup/InputPop.vue";
+import PlaylistSelect from "./popup/PlaylistSelect.vue";
+import Loader from "./popup/loader.vue";
 
 const ActiveAreaStore = useActiveAreaStore();
-const AppBasic = useAppBasicStore()
+const AppBasic = useAppBasicStore();
 
-const isPreload = ref(true)
-
+const isPreload = ref(true);
 
 const checkUserBox = async () => {
-  const {data:boxCreds} = await useFetch("/api/box/checkBOX?username="+AppBasic.SessionUsername)
+  const { data: boxCreds } = await useFetch(
+    "/api/box/checkBOX?username=" + AppBasic.SessionUsername
+  );
 
-  if (!boxCreds.value){
-    alert("Cannot fetch data from BOX. Credentials are wrong, please check.")
+  if (!boxCreds.value) {
+    alert("Cannot fetch data from BOX. Credentials are wrong, please check.");
   }
-
-}
+};
 
 const postload = async () => {
-  const { data: duser } = await authClient.useSession(useFetch)
+  const { data: duser } = await authClient.useSession(useFetch);
 
-  const { data: userCheck } = await useFetch("/api/checkuser?username=" + duser.value.user.username)
+  const { data: userCheck } = await useFetch(
+    "/api/checkuser?username=" + duser.value.user.username
+  );
 
-  console.log("LOGIN AS", duser.value.user.username, userCheck.value)
+  console.log("LOGIN AS", duser.value.user.username, userCheck.value);
 
-  AppBasic.SetSessionUsername(duser.value.user.username)
+  AppBasic.SetSessionUsername(duser.value.user.username);
 
-
-  AppBasic.setIsNewUser(!userCheck.value)
-
-
+  AppBasic.setIsNewUser(!userCheck.value);
 
   if (!userCheck.value) {
-    alert("Please Fill Box Credintials to Use the app")
-    ActiveAreaStore.setCurrentArea("FOLDER")
+    alert("Please Fill Box Credintials to Use the app");
+    ActiveAreaStore.setCurrentArea("FOLDER");
   }
-
-
-
-}
-
+};
 
 onMounted(async () => {
-  await postload()
-  isPreload.value = false
-
-})
-
-
+  await postload();
+  isPreload.value = false;
+});
 </script>
 
 <template>
-  <div v-if="!isPreload" >
+  <div v-if="!isPreload">
+    <div v-if="AppBasic.isNewUser">
+      <OnBoarding />
+    </div>
 
+    <span v-else>
+      <SideBar />
+      <Wallpaper />
+      <PlayBox />
+      <ActiveArea>
+        <Transition>
+          <TrackList v-if="ActiveAreaStore.currentArea === 'TRACKLIST'" />
+        </Transition>
 
-  <div v-if="AppBasic.isNewUser"  >
-    <OnBoarding/>
-  </div>
-  <span v-else >
+        <Transition>
+          <Settings v-if="ActiveAreaStore.currentArea === 'SETTINGS'" />
+        </Transition>
 
-    <SideBar />
-    <Wallpaper />
-    <PlayBox />
-    <ActiveArea>
-      <TrackList v-if="ActiveAreaStore.currentArea === 'TRACKLIST'" />
-      <Settings v-if="ActiveAreaStore.currentArea === 'SETTINGS'" />
-      <Playlist v-if="ActiveAreaStore.currentArea === 'PLAYLIST'"   />
-      <FileSystem v-if="ActiveAreaStore.currentArea === 'FOLDER'" />
-    </ActiveArea>
+        <Transition>
+          <Playlist v-if="ActiveAreaStore.currentArea === 'PLAYLIST'" />
+        </Transition>
 
-    <InputPop/>
-    <PlaylistSelect  />
-    <Loader/>
+        <Transition>
+          <FileSystem v-if="ActiveAreaStore.currentArea === 'FOLDER'" />
+        </Transition>
+      </ActiveArea>
 
-  </span>
-
-
-
-  </div>
-
-
-
-  <div class="loading-screen" v-else  >
-
-    <div class="Homeloader"  ></div>
+      <InputPop />
+      <PlaylistSelect />
+      <Loader />
+    </span>
   </div>
 
+  <div class="loading-screen" v-else>
+    <div class="Homeloader"></div>
+  </div>
 </template>
 
 <style scoped>
-
-.loading-screen{
+.loading-screen {
   height: 97vh;
   display: flex;
   justify-content: center;

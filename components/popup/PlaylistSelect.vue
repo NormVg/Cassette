@@ -1,4 +1,9 @@
 <template>
+
+<Transition>
+
+
+
   <div v-if="PopState.Add2playlistPOP" class="popup">
     <div class="popup-content">
 
@@ -23,6 +28,8 @@
       </div>
     </div>
   </div>
+
+</Transition>
 </template>
 
 <script setup>

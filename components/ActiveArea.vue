@@ -41,7 +41,7 @@ const ActiveAreaStore = useActiveAreaStore()
   margin-top: calc(-100vh + 250px);
   border-radius: 10px;
   overflow: auto;
-  animation: slideInFromRight 1.2s forwards;
+  animation: slideInFromRight 1s forwards;
 }
 @keyframes slideInFromRight {
   0% {
