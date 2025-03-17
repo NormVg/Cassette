@@ -70,21 +70,27 @@ const addPlaylist = async () => {
 };
 
 
-const OpenPlaylist = (param)=>{
-  console.log(param.PlayName,"opend")
+const OpenPlaylist = (param) => {
+  console.log(param.PlayName, "opend")
   OpenedPlaylist.value = param
-  isPlayListOpen.value =true
+  isPlayListOpen.value = true
 }
 
 
-const goBack = () =>{
+const goBack = () => {
   console.log("closed")
   OpenedPlaylist.value = {}
-  isPlayListOpen.value =false
+  isPlayListOpen.value = false
 }
 
 onMounted(async () => {
-  loadPlayList()
+
+  PopState.setFullLoader(true)
+
+  await loadPlayList()
+
+  PopState.setFullLoader(false)
+
 })
 
 
@@ -93,32 +99,33 @@ onMounted(async () => {
 <template>
   <div id="tracklist-box">
 
-<div v-if="!isPlayListOpen">
+    <div v-if="!isPlayListOpen">
 
 
-  <div id="add-playlist" @click="addPlaylist">
-    Create Playlist <img :src="AddBtn" alt="">
-  </div>
-
-  <div v-for="item in currentPlayList" @click="()=>{OpenPlaylist(item)}"  :key="item">
-    <PlaylistCard  :title="item.PlayName" />
-  </div>
-
-</div>
-
-<div v-else>
-  <div class="parent-folder-box">
-      <button class="back-button" @click="goBack"><img :src="backIcon" alt=""></button>
-        {{ OpenedPlaylist.PlayName }}
-          <!-- asdasd -->
+      <div id="add-playlist" @click="addPlaylist">
+        Create Playlist <img :src="AddBtn" alt="">
       </div>
 
-  <div v-for="item in OpenedPlaylist.PlaySongs" :key="item" >
-    <PlaylistSongCard :currentTrackList="OpenedPlaylist.PlaySongs" :isPlayList="true"   :title="item.name" :idsong="item.songID" :artist="OpenedPlaylist.PlayName" />
-  </div>
+      <div v-for="item in currentPlayList" @click="() => { OpenPlaylist(item) }" :key="item">
+        <PlaylistCard :title="item.PlayName" />
+      </div>
+
+    </div>
+
+    <div v-else>
+      <div class="parent-folder-box">
+        <button class="back-button" @click="goBack"><img :src="backIcon" alt=""></button>
+        {{ OpenedPlaylist.PlayName }}
+        <!-- asdasd -->
+      </div>
+
+      <div v-for="item in OpenedPlaylist.PlaySongs" :key="item">
+        <PlaylistSongCard :currentTrackList="OpenedPlaylist.PlaySongs" :isPlayList="true" :title="item.name"
+          :idsong="item.songID" :artist="OpenedPlaylist.PlayName" />
+      </div>
 
 
-</div>
+    </div>
 
 
 
@@ -126,10 +133,11 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.back-button img{
-  height:30px;
+.back-button img {
+  height: 30px;
   /* border: 1px solid green; */
 }
+
 .back-button {
   /* margin-bottom: 10px; */
   background: none;
@@ -137,7 +145,7 @@ onMounted(async () => {
   border: none;
   /* padding: 5px 10px; */
   height: 50px;
-  width:50px;
+  width: 50px;
   cursor: pointer;
   /* border: 1px solid green; */
 

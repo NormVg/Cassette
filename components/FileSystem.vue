@@ -1,13 +1,20 @@
-
 <script setup>
 import { useAppBasicStore } from '~/store/AppBasicState';
+import { usePopUpStore } from '~/store/PopUpStore';
 
 
 const AppBaisc = useAppBasicStore()
+const PopUpState = usePopUpStore()
+const songList = ref([])
 
-console.log(AppBaisc.SessionUsername)
-const {data:songList} = await useFetch("/api/mg/songList?username="+AppBaisc.SessionUsername)
+onMounted(async () => {
+  // console.log(AppBaisc.SessionUsername)
+  PopUpState.setFullLoader(true)
+  const { data: List } = await useFetch("/api/mg/songList?username=" + AppBaisc.SessionUsername)
+  songList.value = List.value
+  PopUpState.setFullLoader(false)
 
+})
 
 </script>
 
@@ -21,7 +28,7 @@ const {data:songList} = await useFetch("/api/mg/songList?username="+AppBaisc.Ses
 
 <style scoped>
 #tracklist-box {
- overflow-y: scroll;
- height: 88%;
+  overflow-y: scroll;
+  height: 88%;
 }
 </style>

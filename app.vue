@@ -1,7 +1,7 @@
 <template>
 
-  <NuxtPage />
   <Analytics/>
+  <NuxtPage />
 </template>
 
 <style>
@@ -16,5 +16,5 @@
 
 <script setup>
 import "@/assets/main.css";
-import { Analytics } from '@vercel/analytics/nuxt'
+import { Analytics } from '@vercel/analytics/nuxt';
 </script>
