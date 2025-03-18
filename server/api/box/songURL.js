@@ -1,5 +1,7 @@
 import { usernameData } from "~/server/func/usernameData";
-import { ClientBox,BoxFileURL } from "~/utils/BoxClient";
+import { BoxFileURL } from "~/utils/BoxClient";
+import { ClientOAuthBox } from "~/server/func/BoxClientOAuth";
+
 
 
 export default defineEventHandler(async (event) => {
@@ -21,7 +23,7 @@ export default defineEventHandler(async (event) => {
   }
 
 
-  const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
+  const boxClient = await ClientOAuthBox(username);
 
 
   const url =  await BoxFileURL(boxClient,song_id)

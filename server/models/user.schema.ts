@@ -7,9 +7,9 @@ export const UserSchema = defineMongooseModel({
     userID: { type: String, required: true },
     email: { type: String, required: true },
     username: { type: String, required: true },
-    box_user_id: { type: String, required: true },
-    box_client_id: { type: String, required: true },
-    box_client_secret: { type: String, required: true },
+    box_access_token: { type: String, required: true },
+    box_refresh_token: { type: String, required: true },
+
   },
   options: {
     collection: 'userData',

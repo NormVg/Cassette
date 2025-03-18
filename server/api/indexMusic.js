@@ -1,9 +1,10 @@
-import { BoxIndexWalkAllFiles, ClientBox,BoxFindItem } from "~/utils/BoxClient";
+import { BoxIndexWalkAllFiles, BoxFindItem } from "~/utils/BoxClient";
 import { songSchema } from "../models/song.schema";
 import getCurrentDateTimeString from "~/utils/syncNowDate";
 import { usernameData } from "../func/usernameData";
+import { ClientOAuthBox } from "~/server/func/BoxClientOAuth";
 
-
+ClientOAuthBox
 
 export default defineEventHandler(async (event) => {
 
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
 
 
 
-  const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
+  const boxClient = await ClientOAuthBox(username);
 
   const targetItem = await BoxFindItem(boxClient,"cassette")
 

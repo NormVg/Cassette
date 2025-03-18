@@ -1,13 +1,11 @@
-import { PostGress } from "~/utils/PgPool";
-
-import { UserSchema } from "../models/user.schema";
 
 import { thumbSchema } from "../models/thumb.schema";
 
-import { ClientBox, BoxListDir, BoxFolderChild } from "~/utils/BoxClient";
+import {  BoxListDir, BoxFolderChild } from "~/utils/BoxClient";
 import { usernameData } from "../func/usernameData";
 import getCurrentDateTimeString from "~/utils/syncNowDate";
 
+import { ClientOAuthBox } from "~/server/func/BoxClientOAuth";
 
 
 export default defineEventHandler(async (event) => {
@@ -26,7 +24,7 @@ export default defineEventHandler(async (event) => {
     return "ERROR: user not found";
   }
 
-  const clientBox = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
+  const clientBox = await ClientOAuthBox(username);
 
   const cass_data_folder = await BoxFolderChild(
     clientBox,

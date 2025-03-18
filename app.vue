@@ -15,6 +15,6 @@
 
 
 <script setup>
-import "@/assets/main.css";
+import "@/assets/css/main.css";
 import { Analytics } from '@vercel/analytics/nuxt';
 </script>

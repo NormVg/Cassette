@@ -1,22 +1,22 @@
 import { BoxClient } from "box-typescript-sdk-gen/lib/client.generated.js";
 import {
-  BoxCcgAuth,
-  CcgConfig,
-} from "box-typescript-sdk-gen/lib/box/ccgAuth.generated.js";
+  BoxOAuth,
+  OAuthConfig,
+} from "box-typescript-sdk-gen/lib/box/oauth.generated.js";
 
-
-
-const ClientBox =  async (userId = '22482084327',clientId='v6pvmsczecu4j9qaunxw4b31mpa9pcfd',clientSecret="CvUps5dCqtgbfVp7AZpcNeTDuIJAATq5") => {
-
-const ccgConfig = new CcgConfig({
-  userId: userId,
-  clientId: clientId,
-  clientSecret: clientSecret,
+const config = new OAuthConfig({
+  clientId: process.env.BOX_CLIENT_ID,
+  clientSecret: process.env.BOX_CLIENT_SECRET,
 });
+const oauth = new BoxOAuth({ config });
 
-const ccgAuth = new BoxCcgAuth({ config: ccgConfig });
-const client = new BoxClient({ auth: ccgAuth });
 
+
+const ClientBox =  async (accessToken) => {
+
+
+const client = new BoxClient({ auth: oauth });
+oauth.tokenStorage.store({ accessToken });
 return client
 
 }

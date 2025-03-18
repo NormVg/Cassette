@@ -6,10 +6,19 @@ const password = ref('');
 
 const route = useRoute().query
 const redirectUrl = route.redirect
+const isLoading = ref(false)
+
 
 console.log(redirectUrl)
 
 const handleSubmit = async (e) => {
+
+  if (isLoading.value){
+    return
+  }
+
+  isLoading.value = true
+
   e.preventDefault();
   console.log('Logging in...', {
     UsernameOrEmail: UsernameOrEmail.value,
@@ -28,6 +37,7 @@ const handleSubmit = async (e) => {
           console.log("login processing");
         },
         onSuccess: () => {
+          isLoading.value = false
           console.log("login succes");
           console.log("redirecting to", redirectUrl)
 
@@ -39,6 +49,7 @@ const handleSubmit = async (e) => {
         },
         onError: (ctx) => {
           alert(ctx.error.message);
+          isLoading.value = false
         },
       }
     );
@@ -105,7 +116,18 @@ import logo from "@/assets/ico.png";
         </div>
 
         <button type="submit" class="submit-button">
-          Sign In
+
+
+
+          <span v-if="isLoading">
+
+            Loading....
+          </span>
+
+          <span v-else>
+            Login
+          </span>
+
         </button>
 
         <!-- <div class="divider">
@@ -138,6 +160,10 @@ import logo from "@/assets/ico.png";
 </template>
 
 <style scoped>
+
+
+
+
 .auth-container {
   display: flex;
   min-height: 100vh;

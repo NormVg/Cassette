@@ -1,10 +1,12 @@
 import { usernameData } from "~/server/func/usernameData";
 import {
-  ClientBox,
+
   BoxFileURL,
   BoxFolderChild,
   BoxListDir,
 } from "~/utils/BoxClient";
+
+import { ClientOAuthBox } from "~/server/func/BoxClientOAuth";
 
 
 
@@ -31,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
 
 
-  const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
+  const boxClient = await ClientOAuthBox(username);
 
   const cass_data = await BoxFolderChild(boxClient, "cassette_data");
 

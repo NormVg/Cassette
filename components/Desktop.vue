@@ -29,7 +29,7 @@ const postload = async () => {
     "/api/checkuser?username=" + duser.value.user.username
   );
 
-  console.log("LOGIN AS", duser.value.user.username, userCheck.value);
+  // console.log("LOGIN AS", duser.value.user.username, userCheck.value);
 
   AppBasic.SetSessionUsername(duser.value.user.username);
 
@@ -50,6 +50,8 @@ onMounted(async () => {
 <template>
   <div v-if="!isPreload">
     <div v-if="AppBasic.isNewUser">
+    <!-- <div v-if="true"> -->
+
       <OnBoarding />
     </div>
 

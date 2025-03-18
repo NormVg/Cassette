@@ -1,6 +1,6 @@
 import axios from "axios";
 import mime from "mime-types"; // Helps get correct file extension
-import {ClientBox,BoxUploadFile,BoxFolderChild} from "@/utils/BoxClient"
+import {BoxUploadFile,BoxFolderChild} from "@/utils/BoxClient"
 
 import { PostGress } from "~/utils/PgPool";
 
@@ -12,6 +12,10 @@ import { thumbSchema } from "~/server/models/thumb.schema";
 import getCurrentDateTimeString from "~/utils/syncNowDate";
 
 import { usernameData } from "~/server/func/usernameData";
+
+
+import { ClientOAuthBox } from "~/server/func/BoxClientOAuth";
+
 
 export default defineEventHandler(async (event) => {
 
@@ -37,7 +41,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Fetch the image from the API
-    const boxClient = await ClientBox(user_box_user_id,user_box_client_id,user_box_client_secret);
+    const boxClient = await ClientOAuthBox(username);
 
 
     const cass_data_folder = await BoxFolderChild(boxClient,'cassette_data','0')

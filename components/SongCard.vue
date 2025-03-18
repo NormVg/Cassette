@@ -148,8 +148,12 @@ const handleMenuClick = async (event) => {
   PopState.setTitleAdd2playlistPOP("Select Playlist")
   PopState.setAdd2playlistPOP(true)
   PopState.setSelectedItems([])
+  PopState.setFullLoader(true)
+
   const { data: PlayListNow } = await useFetch("/api/mg/get-playlist?username=" + AppBasic.SessionUsername)
   PopState.setSetlectOptions(PlayListNow.value[0].playlist)
+  PopState.setFullLoader(false)
+
   console.log(PlayListNow.value[0].playlist)
 
 
