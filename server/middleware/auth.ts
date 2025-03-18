@@ -8,7 +8,6 @@ export default defineEventHandler(async (event) => {
   const request = getRequestURL(event);
 
   if (request.pathname.startsWith("/api")) {
-
     if (request.pathname.startsWith("/api/box/songURL")) {
       return;
     }
