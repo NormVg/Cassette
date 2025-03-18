@@ -12,6 +12,9 @@ export default defineEventHandler(async (event) => {
     if (request.pathname.startsWith("/api/box/songURL")) {
       return;
     }
+    if (request.pathname.startsWith("/api/download-thumb")) {
+      return;
+    }
 
     if (request.pathname.startsWith("/api/auth/")) {
       return;
