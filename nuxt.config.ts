@@ -27,7 +27,7 @@ export default defineNuxtConfig({
         // Open Graph (OG)
         { property: 'og:title', content: 'Cassette Music - Decentralized Streaming' },
         { property: 'og:description', content: 'Cassette Music, developed by TheAlphaOnes and Vishnu Gupta (TheNormVg), is a decentralized music platform powered by Connect Box for secure, global streaming.' },
-        { property: 'og:image', content: '/og-img.png' },
+        { property: 'og:image', content: 'https://cassette.thealphaones.com/og-img.png' },
         { property: 'og:url', content: 'https://cassette.thealphaones.com' },
         { property: 'og:type', content: 'website' },
 
@@ -35,7 +35,7 @@ export default defineNuxtConfig({
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Cassette Music - Decentralized Streaming' },
         { name: 'twitter:description', content: 'Built by TheAlphaOnes and Vishnu Gupta (TheNormVg), Cassette Music lets you stream your music anywhere with decentralized cloud storage.' },
-        { name: 'twitter:image', content: '/og-img.png' },
+        { name: 'twitter:image', content: 'https://cassette.thealphaones.com/og-img.png' },
         { name: 'twitter:site', content: '@TheNormVg' },
       ],
     },
