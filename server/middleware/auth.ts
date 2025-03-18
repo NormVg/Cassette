@@ -5,14 +5,16 @@ export default defineEventHandler(async (event) => {
     headers: event.headers,
   });
 
-  const request = getRequestURL(event)
+  const request = getRequestURL(event);
 
+  if (request.pathname.startsWith("/api")) {
 
+    if (request.pathname.startsWith("/api/box/songURL")) {
+      return;
+    }
 
-  if (request.pathname.startsWith('/api')) {
-
-    if (request.pathname.startsWith('/api/auth/')){
-      return
+    if (request.pathname.startsWith("/api/auth/")) {
+      return;
     }
 
     if (!session || !session.user) {
@@ -21,10 +23,5 @@ export default defineEventHandler(async (event) => {
         statusMessage: "Unauthorized",
       });
     }
-
   }
-
-
-
-
 });
