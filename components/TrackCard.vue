@@ -30,6 +30,10 @@ const AppBasic = useAppBasicStore()
 
 const handleClick = async () => {
 
+
+  AppBasic.SetMusicLoading(true)
+
+
   const musicOPFS  = await musicFileExists(prop.title)
   console.log(musicOPFS,"MUSIC FILE IN OPFS")
 
@@ -51,6 +55,7 @@ const handleClick = async () => {
     src: musicSrc,
     songID: prop.idsong
   })
+  AppBasic.SetMusicLoading(false)
 
 
   // const { data: srcURL } = await useFetch("/api/box/songURL?song_id=" + prop.idsong+"&username="+AppBasic.SessionUsername)

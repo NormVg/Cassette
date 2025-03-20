@@ -61,9 +61,11 @@ const handleClick = async () => {
 
   console.log(mainList)
   AppBasic.SetCurrentTrackList(mainList)
+  AppBasic.SetMusicLoading(true)
 
 
 
+  ActiveArea.setCurrentArea('TRACKLIST')
 
 
   console.log(prop.idsong)
@@ -97,8 +99,8 @@ const handleClick = async () => {
   //   src: srcURL.value.src,
   //   songID: prop.idsong
   // })
+  AppBasic.SetMusicLoading(false)
 
-  ActiveArea.setCurrentArea('TRACKLIST')
 }
 
 

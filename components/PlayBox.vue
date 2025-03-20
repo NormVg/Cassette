@@ -26,7 +26,7 @@ const isLoop = ref(false)
 const isSuffle = ref(false)
 const thumbnail = ref(DefThumb)
 
-const isMusicLoading = ref(false)
+
 
 
 
@@ -320,7 +320,8 @@ const onSongChange = async () => {
 
 const setMusicLoading = (val) => {
   console.log(val)
-  isMusicLoading.value = val
+
+  AppBasic.SetMusicLoading(val)
 }
 
 onMounted(() => {
@@ -392,7 +393,7 @@ watch(srcURL, onSongChange)
         </div>
 
 
-        <div id="pb-play-pause" class="pb-btn" v-if="!isMusicLoading">
+        <div id="pb-play-pause" class="pb-btn" v-if="!AppBasic.isMusicLoading">
 
           <img :src="Play" v-if="!isMusicPlaying" @click="toggleMusic" alt="play">
           <img :src="Pause" v-else @click="toggleMusic" alt="pause">

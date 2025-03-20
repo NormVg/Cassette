@@ -59,8 +59,9 @@ const handleClick = async () => {
 
 
   AppBasic.SetCurrentTrackList(mainList)
+  ActiveArea.setCurrentArea('TRACKLIST')
 
-
+  AppBasic.SetMusicLoading(true)
 
   const musicOPFS = await musicFileExists(prop.title)
   console.log(musicOPFS, "MUSIC FILE IN OPFS")
@@ -83,8 +84,8 @@ const handleClick = async () => {
     src: musicSrc,
     songID: prop.idsong
   })
+  AppBasic.SetMusicLoading(false)
 
-  ActiveArea.setCurrentArea('TRACKLIST')
 }
 
 
