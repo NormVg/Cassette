@@ -1,5 +1,5 @@
 <template>
-
+  <VitePwaManifest/>
   <Analytics/>
   <NuxtPage />
 </template>
@@ -15,6 +15,7 @@
 
 
 <script setup>
+import { VitePwaManifest } from "#components";
 import "@/assets/css/main.css";
 import { Analytics } from '@vercel/analytics/nuxt';
 </script>

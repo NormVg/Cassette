@@ -41,5 +41,37 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/device", "nuxt-mongoose", "@pinia/nuxt"],
+  modules: ["@nuxtjs/device", "nuxt-mongoose", "@pinia/nuxt", '@vite-pwa/nuxt'],
+  pwa: {
+    manifest:{
+      "short_name": "Cassette",
+      "name": "Cassette Music",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/favicon.svg",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+
+      "start_url": ".",
+      "display": "standalone",
+    },
+
+    workbox:{
+      navigateFallback:"/"
+    },
+    devOptions:{
+      enabled:true,
+      type:"module"
+    }
+
+
+
+  }
 })
