@@ -1,22 +1,24 @@
 import { betterAuth } from "better-auth";
-import ps from "pg"
+import ps from "pg";
 
-import { username } from "better-auth/plugins"
+import { username } from "better-auth/plugins";
 
 // import { PostGress } from "~/utils/PgPool";
 
 export const auth = betterAuth({
-
-    emailAndPassword: {
-        enabled: true
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      // await sendEmailVerify(url,user.email,user.name);
     },
+  },
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+  },
 
-    plugins: [
-        username()
-    ] ,
+  plugins: [username()],
 
-    database:new ps.Pool({
-            connectionString : process.env.DATABASE_URL
-        })
-
-})
+  database: new ps.Pool({
+    connectionString: process.env.DATABASE_URL,
+  }),
+});

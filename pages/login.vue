@@ -1,30 +1,30 @@
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
+import logo from "@/assets/ico.png";
 
-const UsernameOrEmail = ref('');
-const password = ref('');
+const UsernameOrEmail = ref("");
+const password = ref("");
 
-const route = useRoute().query
-const redirectUrl = route.redirect
-const isLoading = ref(false)
+const isLoading = ref(false);
+const isPopUp = ref(false);
+const route = useRoute().query;
+const redirectUrl = route.redirect;
 
-
-console.log(redirectUrl)
+console.log(redirectUrl);
 
 const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  if (isLoading.value){
-    return
+  if (isLoading.value) {
+    return;
   }
 
-  isLoading.value = true
+  isLoading.value = true;
 
-  e.preventDefault();
-  console.log('Logging in...', {
+  console.log("Logging in...", {
     UsernameOrEmail: UsernameOrEmail.value,
     password: password.value,
   });
-
 
   if (String(UsernameOrEmail.value).includes("@")) {
     await authClient.signIn.email(
@@ -37,63 +37,95 @@ const handleSubmit = async (e) => {
           console.log("login processing");
         },
         onSuccess: () => {
-          isLoading.value = false
           console.log("login succes");
-          console.log("redirecting to", redirectUrl)
+
+          console.log("redirecting to", redirectUrl);
 
           if (redirectUrl !== undefined) {
-          navigateTo(redirectUrl,{external:true});
-        } else {
-          navigateTo("/")
-        }
+            isLoading.value = false;
+
+            navigateTo(redirectUrl, { external: true });
+          } else {
+            isLoading.value = false;
+
+            navigateTo("/");
+          }
         },
         onError: (ctx) => {
+          isLoading.value = false;
+          if (ctx.error.status === 403) {
+            alert("Please verify your email.");
+            navigateTo("https://account.thealphaones.com/account-options", {
+              external: true,
+            });
+            return;
+          }
+
           alert(ctx.error.message);
-          isLoading.value = false
         },
       }
     );
     // Implement better-auth logic here
   } else {
-    const data = await authClient.signIn.username({
-      username: UsernameOrEmail.value,
-      password: password.value,
-    }, {
-      onRequest: () => {
-        console.log("login processing")
+    const data = await authClient.signIn.username(
+      {
+        username: UsernameOrEmail.value,
+        password: password.value,
       },
-      onSuccess: () => {
-        console.log("login succes")
-        if (redirectUrl !== undefined) {
-          navigateTo(redirectUrl,{external:true});
-        } else {
-          navigateTo("/")
-        }
-      },
-      onError: (ctx) => {
-        alert(ctx.error.message)
+      {
+        onRequest: () => {
+          console.log("login processing");
+        },
+        onSuccess: () => {
+          console.log("login succes");
+
+          if (redirectUrl !== undefined) {
+            isLoading.value = false;
+
+            navigateTo(redirectUrl, { external: true });
+          } else {
+            isLoading.value = false;
+
+            navigateTo("/");
+          }
+        },
+        onError: (ctx) => {
+          isLoading.value = false;
+
+          if (ctx.error.status === 403) {
+            alert("Please verify your email.");
+            navigateTo("https://account.thealphaones.com/account-options", {
+              external: true,
+            });
+            return;
+          }
+          alert(ctx.error.message);
+        },
       }
-    });
+    );
   }
-
-
-
 };
 
-
-import logo from "@/assets/ico.png";
+const handleForgetPassword = async () => {
+  navigateTo("https://account.thealphaones.com/account-options", {
+    external: true,
+  });
+};
 </script>
 
 <template>
   <div class="auth-container">
     <div class="auth-left">
       <div class="brand italianno-regular">
-        <span class="brand-icon"> <img :src="logo" alt="tao-logo"></span>
+        <span class="brand-icon"> <img :src="logo" alt="tao-logo" /></span>
         TheAlphaOnes
       </div>
       <div class="testimonial">
-        <p class="testimonial-text">"Welcome back to TheAlphaOnes. Secure, seamless, and built by creators like you. Log
-          in to access our products and experience the future of innovation."</p>
+        <p class="testimonial-text">
+          "Welcome back to TheAlphaOnes. Secure, seamless, and built by creators
+          like you. Log in to access our products and experience the future of
+          innovation."
+        </p>
         <p class="testimonial-author">Vishnu Gupta</p>
       </div>
     </div>
@@ -106,29 +138,31 @@ import logo from "@/assets/ico.png";
       <form @submit="handleSubmit" class="auth-form">
         <div class="form-group">
           <label for="UserName&email">Username or Email</label>
-          <input id="UserName&email" v-model="UsernameOrEmail" type="text" placeholder="name@example.com or username"
-            required />
+          <input
+            id="UserName&email"
+            v-model="UsernameOrEmail"
+            type="text"
+            placeholder="name@example.com or username"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input id="password" v-model="password" type="password" placeholder="••••••••" required />
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            placeholder="••••••••"
+            required
+          />
         </div>
 
-        <button type="submit" class="submit-button">
-
-
-
-          <span v-if="isLoading">
-
-            Loading....
-          </span>
-
-          <span v-else>
-            Login
-          </span>
-
+        <button type="submit" class="submit-button" disabled v-if="isLoading">
+          Loading...
         </button>
+
+        <button type="submit" class="submit-button" v-else>Sign In</button>
 
         <!-- <div class="divider">
           <span>OR CONTINUE WITH</span>
@@ -143,10 +177,13 @@ import logo from "@/assets/ico.png";
       </form>
 
       <p class="auth-switch">
+        Forgot your password?
+        <a @click="handleForgetPassword" class="switch-button"
+          >Change Password</a
+        >
+        <br />
         Don't have an account?
-        <router-link to="/signup" class="switch-button">
-          Sign Up
-        </router-link>
+        <router-link to="/signup" class="switch-button"> Sign Up </router-link>
       </p>
 
       <!-- <p class="terms">
@@ -157,13 +194,18 @@ import logo from "@/assets/ico.png";
       </p> -->
     </div>
   </div>
+  <EmailVerificationPopup
+    :email="UsernameOrEmail"
+    @close="
+      () => {
+        isPopUp = false;
+      }
+    "
+    v-if="isPopUp"
+  />
 </template>
 
 <style scoped>
-
-
-
-
 .auth-container {
   display: flex;
   min-height: 100vh;
@@ -172,13 +214,17 @@ import logo from "@/assets/ico.png";
 }
 
 .auth-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+  background: radial-gradient(
+    circle at top left,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 60%
+  );
   pointer-events: none;
 }
 
@@ -321,7 +367,7 @@ import logo from "@/assets/ico.png";
 }
 
 .divider::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 0;
